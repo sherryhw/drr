@@ -7,20 +7,16 @@ package org.imt.drr.model;
  *         PhD students at IMTLucca http://imtlucca.it
  *
  */
-public class Simulator {
+public interface Simulator {
   
   /**
    * Initialize the model. 
    */
-  public void initialize() {
-    
-  }
+  public void initialize();
   
   /**
    * Execute the simulation.
    */
-  public void execute() {
-    
-  }
+  public void execute();
 
 }

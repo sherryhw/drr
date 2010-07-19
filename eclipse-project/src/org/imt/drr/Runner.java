@@ -15,7 +15,8 @@ public class Runner {
    */
   public static void main(String[] args) {
     // TODO Auto-generated method stub
-
+    //RandomData random = new RandomDataImpl();
+    //random.nextPoisson(1);
   }
 
 }
