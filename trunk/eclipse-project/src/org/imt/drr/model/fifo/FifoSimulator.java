@@ -39,7 +39,16 @@ public class FifoSimulator implements Simulator {
   public void initialize() {
     router = new FifoRouter();
     router.initialize();
-    duration = 100;
   }
 
+  /**
+   * Initialization. 
+   * 
+   * @param duration - of the simulation
+   */
+  public void initialize(int duration) {
+    this.duration = duration;
+    initialize();
+  }
+  
 }
