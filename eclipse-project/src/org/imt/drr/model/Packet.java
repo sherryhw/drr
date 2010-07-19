@@ -1,4 +1,4 @@
-package org.imt.drr;
+package org.imt.drr.model;
 
 public class Packet {
 private int idFlow, size, arrivalTime;
