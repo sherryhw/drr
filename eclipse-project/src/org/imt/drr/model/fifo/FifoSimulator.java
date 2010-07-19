@@ -3,6 +3,11 @@
  */
 package org.imt.drr.model.fifo;
 
+import java.util.Vector;
+
+import org.apache.log4j.Logger;
+import org.imt.drr.model.Host;
+import org.imt.drr.model.Node;
 import org.imt.drr.model.Simulator;
 
 /**
@@ -13,9 +18,15 @@ import org.imt.drr.model.Simulator;
 public class FifoSimulator implements Simulator {
 
   /**
-   * An instance of fifo router.
+   * Logger
    */
+  static Logger logger = Logger.getLogger(FifoSimulator.class);
+
+  /** An instance of fifo router. */
   public FifoRouter router;
+
+  /** An instance of host. */
+  public Host host;
 
   /**
    * Number of loops to proceed. 
@@ -27,9 +38,11 @@ public class FifoSimulator implements Simulator {
    */
   @Override
   public void execute() {
+    logger.info("Execute simulation....");   
     for (int i = 0; i < duration; i++ ) {
       router.proceedNextEvent();
     }
+    logger.info("End of simulation....");   
   }
 
   /* (non-Javadoc)
@@ -37,8 +50,14 @@ public class FifoSimulator implements Simulator {
    */
   @Override
   public void initialize() {
-    //router = new FifoRouter();
-    //router.initialize();
+    logger.info("Initialization of the FifoSimulator....");   
+    host = new Host();
+    host.initialize();
+    Vector<Node> sources = new Vector<Node> (); 
+    sources.add(host);
+    router = new FifoRouter(sources, 1);
+    router.initialize();
+    logger.info("End of the initialization of the FifoSimulator....");   
   }
 
   /**

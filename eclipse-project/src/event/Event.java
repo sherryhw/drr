@@ -39,6 +39,13 @@ public class Event {
     this.id=idCounter++;
   }
   
+  /**
+   * to string
+   */
+  public String toString() {
+    return "type = " + type + ", id = " + id + ", time = " + time + ", packet.id = " + packet.getId();
+  }
+  
 }
 
 

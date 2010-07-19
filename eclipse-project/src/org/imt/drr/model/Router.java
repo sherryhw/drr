@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.TreeSet;
 import java.util.Vector;
 
-
+import org.apache.log4j.Logger;
 
 import event.Event;
 import event.EventComparator;
@@ -27,6 +27,11 @@ public abstract class Router implements Node {
   private TreeSet<Event> eventList;
   private Collection<Node> sources;
   
+  /**
+   * Logger
+   */
+  static Logger logger = Logger.getLogger(Router.class);
+
   public Router(Collection<Node> sources, int bandwidth){
     this.bandwidth=bandwidth;
     initialize();
@@ -108,7 +113,7 @@ public abstract class Router implements Node {
   private void createArrivalEvent(Packet p){
     int arrivalTime=simulationTime+p.getInterarrivalTime();
     p.setArrivalTimeInRouter(arrivalTime);
-    Event evt=new Event(p, arrivalTime , EventType.ARRIVAL);
+    Event evt = new Event(p, arrivalTime , EventType.ARRIVAL);
     eventList.add(evt);
   }
   
@@ -131,10 +136,13 @@ public abstract class Router implements Node {
    * The main process of router. 
    */
   public void proceedNextEvent() {
+    logger.info("Proceed the step of simulation");
     //As first step I have to ask a new packet to every source node
     askNewPackets();
+    logger.info("after ask new packets eventList.size = " + eventList.size());
     //then I really proceed the next event
     Event evt = getNextEventUpdateSimulationTime();
+    logger.info("updated simulation " + simulationTime);
     if(evt != null){
       switch(evt.getType()){
       case ARRIVAL:
