@@ -7,6 +7,7 @@ import java.nio.BufferOverflowException;
 import java.util.Collection;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.imt.drr.model.Node;
 import org.imt.drr.model.Packet;
 import org.imt.drr.model.Router;
@@ -23,6 +24,11 @@ public class FifoRouter extends Router {
   
   private Vector<Packet> incomingPackets;
 
+  /**
+   * Logger
+   */
+  static Logger logger = Logger.getLogger(Router.class);
+  
   public FifoRouter(Collection<Node> sources, int bandwidth){
     super(sources,bandwidth);
     initialize();
@@ -36,6 +42,7 @@ public class FifoRouter extends Router {
   
   @Override
   protected void arrivalEventHandler(Event evt){
+    logger.info("start handling arrival event " + evt);
     if(isServing()){
       //The router is busy, so I have to enqueue the packet, if there is still space in the queue.
       if(incomingPackets.size()==MAXQUEUESIZE){
@@ -54,6 +61,7 @@ public class FifoRouter extends Router {
   
   @Override
   protected void departureEventHandler(Event evt){
+    logger.info("start handling departure event " + evt);
     //First put the sent packet in the list of the outgoing packets
     Packet sentPacket = evt.getPacket();
     addOutgoingPacket(sentPacket);  
