@@ -3,6 +3,9 @@
  */
 package org.imt.drr.model.fifo;
 
+
+
+
 import org.imt.drr.model.Packet;
 import org.imt.drr.model.Router;
 
@@ -33,6 +36,12 @@ public class FifoRouter extends Router {
 
   @Override
   public void initialize() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void scheduleNextPacket() {
     // TODO Auto-generated method stub
     
   }
