@@ -1,6 +1,10 @@
 package org.imt.drr.model;
 
-
+/**
+ * 
+ * * @author Andrea Vandin, Dmytro Karamshuk, Iffat Ahmed 
+ *         PhD students at IMTLucca http://imtlucca.it
+ */
 public class Packet {
 private int idFlow, size, arrivalTime;
 private final int id;
