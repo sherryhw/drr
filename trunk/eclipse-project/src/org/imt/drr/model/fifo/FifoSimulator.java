@@ -40,7 +40,7 @@ public class FifoSimulator implements Simulator {
   public void execute() {
     logger.info("Execute simulation....");   
     for (int i = 0; i < duration; i++ ) {
-      //router.proceedNextEvent();
+      router.proceedNextEvent();
     }
     logger.info("End of simulation....");   
   }
