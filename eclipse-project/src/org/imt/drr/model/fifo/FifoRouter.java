@@ -3,17 +3,15 @@
  */
 package org.imt.drr.model.fifo;
 
-
-
-
+import java.nio.BufferOverflowException;
 import java.util.Collection;
+import java.util.Vector;
 
 import org.imt.drr.model.Node;
 import org.imt.drr.model.Packet;
 import org.imt.drr.model.Router;
 
 import event.Event;
-import event.EventType;
 
 /**
  * @author Andrea Vandin, Dmytro Karamshuk, Iffat Ahmed 
@@ -21,57 +19,52 @@ import event.EventType;
  *
  */
 public class FifoRouter extends Router {
+  private final int MAXQUEUESIZE=500;
+  
+  private Vector<Packet> incomingPackets;
 
-  public FifoRouter(Collection<Node> sources){
-    super(sources);
+  public FifoRouter(Collection<Node> sources, int bandwidth){
+    super(sources,bandwidth);
+    initialize();
   }
   
-  /* (non-Javadoc)
-   * @see org.imt.drr.model.Router#proceedNextEvent()
-   */
-  @Override
-  public void proceedNextEvent() {
-    Event evt = getNextEvent();
-    if(evt != null){
-      switch(evt.getType()){
-      case ARRIVAL:
-        //arrival event handler
-        break;
-      case DEPARTURE:
-        //departure event handler
-        break;
-      }
-      //here I have to ask a new packet to every source node
-      askNewPackets();
-    }
-    
-
-  }
-  
-  
-  
-  
-  
-  
-
-  /* (non-Javadoc)
-   * @see org.imt.drr.model.Node#getNextPacket()
-   */
-  @Override
-  public Packet getNextPacket() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
   @Override
   public void initialize() {
-    
+    //Do not initialize fields of the superclass
+   incomingPackets = new Vector<Packet>(MAXQUEUESIZE);
   }
-
+  
   @Override
-  public void scheduleNextPacket() {
-    // TODO Auto-generated method stub
-    
+  protected void arrivalEventHandler(Event evt){
+    if(isServing()){
+      //The router is busy, so I have to enqueue the packet, if there is still space in the queue.
+      if(incomingPackets.size()==MAXQUEUESIZE){
+        throw new BufferOverflowException();
+      }
+      else{
+        incomingPackets.add(evt.getPacket());
+      }
+    }
+    else
+    {
+      //the router is currently idle. I can directly transmit the packet.
+      createDepartureEvent(evt.getPacket());
+    }
+  }
+  
+  @Override
+  protected void departureEventHandler(Event evt){
+    //First put the sent packet in the list of the outgoing packets
+    Packet sentPacket = evt.getPacket();
+    addOutgoingPacket(sentPacket);  
+    //Then create the next departure event if there are any packets in the incomingList
+    if(incomingPackets.isEmpty()){
+      setServing(false);
+    }
+    else{
+      Packet nextPacket = incomingPackets.remove(0);
+      createDepartureEvent(nextPacket);
+    }
   }
 
 }
