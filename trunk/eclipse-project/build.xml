@@ -1,0 +1,61 @@
+<project name="drr" default="make_jar" basedir=".">
+
+  <!-- IMPORTANT VARIABLE HERE -->
+  <property name="build.dir" value="./build"/>
+  <property name="src.dir" value="./src"/>
+  <property name="project_name"   value="drr"/>
+  <property name="jar"            value="${build.dir}/jar/${project_name}.jar"/>
+  <!--<property name="mainclass"      value="com.devdaily.alwaysontoptest.Main"/> -->
+
+  <path id="class.path">
+    <fileset dir="lib">
+      <include name="**/*.jar"/>
+      <include name="**/*.zip"/>
+    </fileset>
+  </path>
+
+  <target name="init">
+     <tstamp/>
+  </target>
+
+  <target name="create_classes_dir" depends="init">
+    <mkdir dir="${build.dir}/classes-ant"/>
+  </target>
+
+  <!-- CLEAN TARGET -->
+  <target name="clean">
+    <delete dir="${build.dir}/classes-ant"/>
+  </target>
+
+  <!-- COMPILE TARGET -->
+  <target name="compile" depends="clean,create_classes_dir">
+    <javac destdir="${build.dir}/classes-ant" source="1.5" >
+      <src path="${src.dir}"/>
+      <exclude name="**/_*.java"/>
+      <classpath refid="class.path"/>
+    </javac>
+    <copy todir="${build.dir}/classes-ant">
+      <fileset dir="${src.dir}">
+        <include name="**/*.gif"/>
+        <include name="**/*.jpg"/>
+        <include name="**/*.png"/>
+      </fileset>
+    </copy>
+  </target>
+
+
+  <!-- MAKE JAR TARGET -->
+  <target name="make_jar" depends="compile">
+    <jar basedir="${build.dir}/classes-ant" 
+         jarfile="${build.dir}/jar/${project_name}.jar" 
+         manifest="${build.dir}/build/${project_name}.manifest"
+         includes="**/*.*"/>
+    <copy todir="${build.dir}/jar">
+      <fileset dir="${build.dir}/lib">
+        <include name="**/*.jar"/>
+        <include name="**/*.zip"/>
+      </fileset>
+    </copy>
+  </target>
+
+</project>
