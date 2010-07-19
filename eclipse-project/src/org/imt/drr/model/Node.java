@@ -1,5 +1,7 @@
 package org.imt.drr.model;
 
+
+
 /**
  * Interface of node. 
  * 
