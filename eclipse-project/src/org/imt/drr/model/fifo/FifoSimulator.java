@@ -37,8 +37,8 @@ public class FifoSimulator implements Simulator {
    */
   @Override
   public void initialize() {
-    router = new FifoRouter();
-    router.initialize();
+    //router = new FifoRouter();
+    //router.initialize();
   }
 
   /**

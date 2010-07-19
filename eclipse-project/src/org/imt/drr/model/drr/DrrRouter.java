@@ -5,6 +5,9 @@ package org.imt.drr.model.drr;
 
 
 
+import java.util.Collection;
+
+import org.imt.drr.model.Node;
 import org.imt.drr.model.Packet;
 import org.imt.drr.model.Router;
 
@@ -14,6 +17,10 @@ import org.imt.drr.model.Router;
  *
  */
 public class DrrRouter extends Router {
+  
+  public DrrRouter(Collection<Node> sources){
+    super(sources);
+  }
 
   /* (non-Javadoc)
    * @see org.imt.drr.model.Router#proceedNextEvent()
@@ -35,7 +42,7 @@ public class DrrRouter extends Router {
 
   @Override
   public void initialize() {
-    // TODO Auto-generated method stub
+    super.initialize();
     
   }
 
