@@ -8,6 +8,8 @@ import java.util.Collection;
 import java.util.TreeSet;
 import java.util.Vector;
 
+
+
 import event.Event;
 import event.EventComparator;
 import event.EventType;
@@ -18,69 +20,145 @@ import event.EventType;
  *
  */
 public abstract class Router implements Node {
-
-  private int clockTime;
-  
-  private Vector<Packet> incomingPackets, outgoingPackets;
+  private boolean serving=false;
+  private final int bandwidth; 
+  private int simulationTime;
+  private Vector<Packet> outgoingPackets;
   private TreeSet<Event> eventList;
-  
   private Collection<Node> sources;
   
-  public Router(Collection<Node> sources){
+  public Router(Collection<Node> sources, int bandwidth){
+    this.bandwidth=bandwidth;
     initialize();
     this.sources=sources;
   }
   
   /*
-   * Initialize the rouer.
+   * Initialize the router.
    */
   public void initialize(){
-    clockTime=0;
+    serving=false;
+    simulationTime=0;
     eventList = new TreeSet<Event>(new EventComparator());
-    incomingPackets = new Vector<Packet>();
     outgoingPackets = new Vector<Packet>();
   }
   
+  protected int getCurrentSimulationTime(){
+    return simulationTime;
+  }
+  
   /**
-   * Return the next event from eventList 
+   * return true if the router is currently serving (transmitting) a packet
+   */
+  protected boolean isServing() {
+    return serving;
+  }
+
+  protected void setServing(boolean serving) {
+    this.serving = serving;
+  }
+  
+  /**
+   * Return the next event from eventList, and update accordingly  the simulation time 
    * @return
    */
-  protected Event getNextEvent(){
+  protected Event getNextEventUpdateSimulationTime(){
     Event evt = null;
     if(eventList.size()>0){
       evt=eventList.first();
       eventList.remove(evt);
+      simulationTime=evt.getTime();
     }
     return evt;
   }
   
   /**
-   * 
-   * @return next packet 
+   * Add a sent packet to the list of the outgoing packets
    */
-  public Packet getNextPacket(){
-    
-    return null;
+  protected void addOutgoingPacket(Packet p){
+    outgoingPackets.add(p);
   }
   
+  /**
+   * This method is called by the next router to ask an outgoing packet
+   */
+  public Packet getNextPacket(){
+    Packet nextPacket=null;
+    if(!outgoingPackets.isEmpty()){
+      nextPacket=outgoingPackets.remove(0);
+    }
+    return nextPacket;
+  }
+  
+  /**
+   * Ask to the sources to send a packet
+   */
   protected void askNewPackets(){
     for (Node node : sources) {
       Packet p = node.getNextPacket();
       if(p!=null){
-        Event evt=new Event(p, clockTime, EventType.ARRIVAL);
-        eventList.add(evt);
+        createArrivalEvent(p);
       }
     }
   }
   
   /**
-   * The main process of router. 
+   * Create the arrivalEvent associated to the packet in the argument
    */
-  abstract public void proceedNextEvent();
+  private void createArrivalEvent(Packet p){
+    int arrivalTime=simulationTime+p.getInterarrivalTime();
+    p.setArrivalTimeInRouter(arrivalTime);
+    Event evt=new Event(p, arrivalTime , EventType.ARRIVAL);
+    eventList.add(evt);
+  }
   
   /**
-   * Choose the next packet to be outputted
+   * Evaluate the transmission time of the packet, basing on its size and on the bandwidth
    */
-  public abstract void scheduleNextPacket();
+  private int evaluateTransimissionTime(Packet p){
+    return p.getSize()/bandwidth;
+  }
+  
+  /**
+   * Create the departureEvent associated to the packet in the argument
+   */
+  protected void createDepartureEvent(Packet p){
+    Event departureEvent=new Event(p, simulationTime+evaluateTransimissionTime(p), EventType.DEPARTURE);
+    eventList.add(departureEvent);
+  }
+  
+  /**
+   * The main process of router. 
+   */
+  public void proceedNextEvent() {
+    //As first step I have to ask a new packet to every source node
+    askNewPackets();
+    //then I really proceed the next event
+    Event evt = getNextEventUpdateSimulationTime();
+    if(evt != null){
+      switch(evt.getType()){
+      case ARRIVAL:
+        arrivalEventHandler(evt);
+        break;
+      case DEPARTURE:
+        departureEventHandler(evt);
+        break;
+      }
+    }
+  }
+  
+  /**
+   * The event handler of the arrival event
+   * @param evt
+   */
+  abstract protected void arrivalEventHandler(Event evt);
+  
+  /**
+   * The event handler of the departure event
+   * @param evt
+   */
+  abstract protected void departureEventHandler(Event evt);
+  
+ 
 
 }
