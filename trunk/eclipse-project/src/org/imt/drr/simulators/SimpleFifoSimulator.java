@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.imt.drr.model.Node;
+import org.imt.drr.model.Router;
 import org.imt.drr.model.Simulator;
 import org.imt.drr.model.fifo.CombinedHost;
 import org.imt.drr.model.fifo.FifoRouter;
@@ -68,7 +69,7 @@ public class SimpleFifoSimulator implements Simulator {
     Vector<Node> sources = new Vector<Node> (); 
     sources.add(host);
     stats = new Statistics();
-    router = new FifoRouter(sources, 1, stats, "MainRouter");
+    router = new FifoRouter(sources, Router.DEFAULT_BANDWIDTH, stats, "MainRouter");
     router.initialize();
     logger.info("End of the initialization of the FifoSimulator....");   
   }
