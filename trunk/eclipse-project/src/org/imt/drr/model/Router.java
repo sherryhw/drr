@@ -112,6 +112,10 @@ public abstract class Router implements ActiveNode {
       if(p != null){
         createArrivalEvent(p);
       }
+      else{
+        //createFakEventForThisNode?
+        bastards.add(index);
+      }
     }
   }
   
