@@ -33,7 +33,7 @@ public class Runner {
     
     //We just start with creating simple Fifo Simulator
     SimpleFifoSimulator simulator = new SimpleFifoSimulator();
-    simulator.initialize(10);
+    simulator.initialize(100);
     simulator.execute();
   }
 

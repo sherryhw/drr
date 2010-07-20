@@ -53,7 +53,8 @@ public class Event {
    * to string
    */
   public String toString() {
-    return "type = " + type + ", id = " + id + ", time = " + time + ", packet.id = " + packet.getId();
+    return "type = " + type + ", id = " + id + ", time = " + time 
+      + ", packet.id = " + (packet == null ? "null" : packet.getId()) + ", sourceId = " + sourceId;
   }
   
 }
