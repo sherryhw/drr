@@ -24,7 +24,7 @@ public class SimpleFifoSimulator implements Simulator {
   static Logger logger = Logger.getLogger(SimpleFifoSimulator.class);
 
   /** An instance of fifo router. */
-  private FifoRouter router;
+  private Router router;
 
   /** An instance of host. */
   private CombinedHost host;
@@ -42,7 +42,7 @@ public class SimpleFifoSimulator implements Simulator {
    */
   @Override
   public void execute() {
-    logger.info("Execute simulation....");   
+    logger.warn("Execute simulation....");   
     for (int i = 0; i < duration; i++ ) {
       logger.info("#######################################################################");
       logger.info("#####################SIMULATION STEP = " + i);
@@ -51,10 +51,10 @@ public class SimpleFifoSimulator implements Simulator {
       host.proceedNextEvent();
       router.proceedNextEvent();
     }
-    logger.info("End of simulation....");   
+    logger.warn("End of simulation....");   
     for (int i = 0; i < stats.getFlowsStatistics().size(); i++) {
-      float throughout = stats.getThroughput(i);
-      logger.info("############## " + i + " flow troughput is " + throughout + " ################");
+      int throughout = stats.getFlowsStatistics().get(new Integer(i)).getPacketsCounter();
+      logger.warn("############## " + i + " flow troughput is " + throughout + " ################");
     }
   }
 
