@@ -55,7 +55,7 @@ public class FifoSimulator implements Simulator {
     host.initialize();
     Vector<Node> sources = new Vector<Node>(); 
     sources.add(host);
-    router = new FifoRouter(sources, 100000);
+    router = new FifoRouter(sources, 100);
     router.initialize();
     
     /*sources = new Vector<Node>();
