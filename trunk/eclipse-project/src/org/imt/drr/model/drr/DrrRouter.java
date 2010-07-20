@@ -3,8 +3,6 @@
  */
 package org.imt.drr.model.drr;
 
-
-
 import java.nio.BufferOverflowException;
 import java.util.Collection;
 import java.util.Vector;
@@ -17,128 +15,127 @@ import org.imt.drr.model.Router;
 import event.Event;
 
 /**
- * @author Andrea Vandin, Dmytro Karamshuk, Iffat Ahmed 
- *         PhD students at IMTLucca http://imtlucca.it
- *
+ * @author Andrea Vandin, Dmytro Karamshuk, Iffat Ahmed PhD students at IMTLucca
+ *         http://imtlucca.it
+ * 
  */
 public class DrrRouter extends Router {
-  
+
   /**
    * Logger
    */
   static Logger logger = Logger.getLogger(Router.class);
-  
+
   private int numberOfFlows;
   private Vector<Vector<Packet>> incomingFlows;
   private Vector<ActiveListElement> activeList;
   private int[] deficitCounters;
   private int[] quantumOfServices;
-  private final int DEFAULTQUANTUMOFSERVICE=500;
-  
-  public DrrRouter(Collection<Node> sources, int bandwidth, int numberOfFlows){
-    super(sources,bandwidth);
-    this.numberOfFlows=numberOfFlows;
+  private final int DEFAULTQUANTUMOFSERVICE = 500;
+
+  public DrrRouter(Collection<Node> sources, int bandwidth, int numberOfFlows) {
+    super(sources, bandwidth);
+    this.numberOfFlows = numberOfFlows;
   }
 
   @Override
   public void initialize() {
     super.initialize();
-    deficitCounters=new int[numberOfFlows];
-    quantumOfServices=new int[numberOfFlows];
-    incomingFlows=new Vector<Vector<Packet>>(numberOfFlows);
-    activeList=new Vector<ActiveListElement>();
-    
-    for(int i=0;i<numberOfFlows;i++){
+    deficitCounters = new int[numberOfFlows];
+    quantumOfServices = new int[numberOfFlows];
+    incomingFlows = new Vector<Vector<Packet>>(numberOfFlows);
+    activeList = new Vector<ActiveListElement>();
+
+    for (int i = 0; i < numberOfFlows; i++) {
       incomingFlows.add(new Vector<Packet>());
-      deficitCounters[i]=0;
-      quantumOfServices[i]=DEFAULTQUANTUMOFSERVICE;
+      deficitCounters[i] = 0;
+      quantumOfServices[i] = DEFAULTQUANTUMOFSERVICE;
     }
-    
+
   }
 
   @Override
   protected void arrivalEventHandler(Event evt) {
-    //logger.info("!!!!!!!!!!!!!!!DRRRouter start handling arrival event. incomingPackets.size="+incomingPackets.size()+ ". isServing= "+isServing()+". " + evt);
-    if(isServing()){
-    //The router is busy
-      
-      //BEGIN check if the flow is in the active list
-      int idFlow=evt.getPacket().getIdFlow();
-      Vector<Packet> flowQueue = incomingFlows.elementAt(idFlow);
-      boolean flowIsInActiveList=false;
-      for (ActiveListElement ale : activeList) {
-        if(ale.getFlowId()==idFlow){
-          flowIsInActiveList=true;
-          break;
-        }
-      }
-      if(!flowIsInActiveList){
-        ActiveListElement element = new ActiveListElement(flowQueue, idFlow);
-        activeList.add(element);
-        deficitCounters[idFlow]=0;
-      }
-     //END check if the flow is in the active list
-      
-      /*
-       * if no free buffers left FreeBuffer... TODOTODOTODOTODOTODOTODOTODO...
-       */
-      //The router is busy, so I have to enqueue the packet, if there is still space in the queue.
-      if(flowQueue.size()==MAXQUEUESIZE){
-        throw new BufferOverflowException();
-      }
-      else{
-        //incomingPackets.add(evt.getPacket());
-        flowQueue.add(evt.getPacket());
+    logger.info("!!!!!!!!!!!!!!!DRRRouter BEGIN handling arrival event. "+evt);
+    
+    // *** BEGIN check if the flow is in the active list *** //
+    int idFlow = evt.getPacket().getIdFlow();
+    Vector<Packet> flowQueue = incomingFlows.elementAt(idFlow);
+    boolean flowIsInActiveList = false;
+    for (ActiveListElement ale : activeList) {
+      if (ale.getFlowId() == idFlow) {
+        flowIsInActiveList = true;
+        break;
       }
     }
-    
-    
-    
-    else //CONTROLLARE, NON SO SERVE.....
-    {
-      //the router is currently idle. I can directly transmit the packet.
-      createDepartureEvent(evt.getPacket());
-      setServing(true);///////////////////////
+    if (!flowIsInActiveList) {    
+      //I add the flow to activeList.
+      ActiveListElement element = new ActiveListElement(flowQueue, idFlow);
+      activeList.add(element);
+      deficitCounters[idFlow] = 0;
     }
-    //logger.info("!!!!!!!!!!!!!!DRRRouter end handling arrival event. incomingPackets.size()="+incomingPackets.size() +". isServing= "+isServing());
-    
+    // *** END check if the flow is in the active list *** //
+
+    /* if no free buffers left FreeBuffer... TODOTODOTODOTODOTODOTODOTODO... */
+    // I enqueue the packet
+    if (flowQueue.size() == MAXQUEUESIZE) {
+      throw new BufferOverflowException();
+    } else {
+      flowQueue.add(evt.getPacket());
+    }
+
+    logger.info("!!!!!!!!!!!!!!!DRRRouter END handling arrival event. "+evt);
   }
 
-  
-  private void dequeueModule(){
-    while(true){
-      if(!activeList.isEmpty()){
-        //Vector<Packet> flowQueue = activeList.remove(0);
-      }
-    }
-  }
   
   @Override
   protected void departureEventHandler(Event evt) {
-    /*
-    //logger.info("!!!!!!!!!!!!!!!start handling departure event. incomingPackets.size="+incomingPackets.size()+ ". isServing= "+isServing()+". " + evt);
-    //First put the sent packet in the list of the outgoing packets
+    logger.info("!!!!!!!!!!!!!!!DRRRouter BEGIN handling departure event. "+evt);
+    
+    // First put the sent packet in the list of the outgoing packets
     Packet sentPacket = evt.getPacket();
-    addOutgoingPacket(sentPacket);  
+    addOutgoingPacket(sentPacket);
 
-    int idFlow=sentPacket.getIdFlow();
-    Vector<Packet> flowQueue = incomingFlows.elementAt(idFlow);
-    //Then create the next departure event if there are any packets in the .....
-    if(incomingPackets.isEmpty()){//NO dirò: se activeList è vuota...
-      setServing(false);
+    //Then create the departure events relative to a round
+    scheduleOneRound();
+
+    logger.info("!!!!!!!!!!!!!!!DRRRouter END handling departure event. "+evt);
+  }
+
+  
+  
+  /**
+   * This method simulate the implement the scheduling of the packets of a round.
+   * It works on all the flows in activeList
+   */
+  private void scheduleOneRound() {
+    if (!activeList.isEmpty()) {
+      int initialActiveListSize = activeList.size();
+      int lastScheduledDepartureTime = this.getCurrentSimulationTime();
+      
+      // During a round are scheduled packets from all the flows in activeList
+      for (int i = 0; i < initialActiveListSize; i++) {
+        ActiveListElement ale = activeList.remove(0);
+        int flowId = ale.getFlowId();
+        Vector<Packet> flowQueue = ale.getFlowQueue();
+        deficitCounters[flowId] += quantumOfServices[flowId];
+        while ((deficitCounters[flowId] > 0) && (!flowQueue.isEmpty())) {
+          int packetSize = flowQueue.elementAt(0).getSize();
+          if (packetSize <= deficitCounters[flowId]) {
+            lastScheduledDepartureTime = createDepartureEvent(flowQueue.remove(0), lastScheduledDepartureTime);
+            deficitCounters[flowId] -= packetSize;
+          } else {
+            // if the size of the packet is greater then the remained deficit counter, then exit from this while loop.
+            break;
+          }
+        }
+        if (flowQueue.isEmpty()) {
+          deficitCounters[flowId] = 0;
+        } else {
+          activeList.add(ale);
+        }
+      }
     }
-    else{
-      //Qui ora devo segliere quali e quanti pacchetti fare partire, aggiornare DC_i ... 
-      Packet nextPacket = incomingPackets.remove(0);
-      createDepartureEvent(nextPacket);
-      
-      
-      
-      
-      
-    }
-    //logger.info("!!!!!!!!!!!!!!!end handling departure event. incomingPackets.size()="+incomingPackets.size() +". isServing= "+isServing());
-    */
   }
 
 }
