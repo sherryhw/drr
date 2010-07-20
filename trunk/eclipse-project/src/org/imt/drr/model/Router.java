@@ -197,6 +197,7 @@ public abstract class Router implements ActiveNode {
     if(evt != null){
       switch(evt.getType()){
       case ARRIVAL:
+        askNewPackets();
         arrivalEventHandler(evt);
         break;
       case DEPARTURE:
@@ -237,7 +238,9 @@ public abstract class Router implements ActiveNode {
    * The event handler of the departure event
    * @param evt
    */
-  abstract protected void nopeEventHandler(Event evt);
+  protected void nopeEventHandler(Event evt){
+    askNewPackets(evt.getSourceId());
+  }
  
 
 }
