@@ -4,7 +4,6 @@
 package org.imt.drr.model.drr;
 
 import java.nio.BufferOverflowException;
-import java.util.Collection;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -33,7 +32,7 @@ public class DrrRouter extends Router {
   private int[] quantumOfServices;
   private final int DEFAULTQUANTUMOFSERVICE = 500;
 
-  public DrrRouter(Collection<Node> sources, int bandwidth, int numberOfFlows) {
+  public DrrRouter(Vector<Node> sources, int bandwidth, int numberOfFlows) {
     super(sources, bandwidth);
     this.numberOfFlows = numberOfFlows;
   }
@@ -136,6 +135,11 @@ public class DrrRouter extends Router {
         }
       }
     }
+  }
+
+  @Override
+  protected void nopeEventHandler(Event evt){
+    askNewPackets(evt.getSourceId());
   }
 
 }

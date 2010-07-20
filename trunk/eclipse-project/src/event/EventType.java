@@ -6,5 +6,5 @@ package event;
  *         PhD students at IMTLucca http://imtlucca.it
  */
 public enum EventType {
-  ARRIVAL, DEPARTURE 
+  ARRIVAL, DEPARTURE, NOPE
 }

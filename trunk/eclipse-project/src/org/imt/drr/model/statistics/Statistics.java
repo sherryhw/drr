@@ -3,7 +3,6 @@
  */
 package org.imt.drr.model.statistics;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.imt.drr.model.Packet;
