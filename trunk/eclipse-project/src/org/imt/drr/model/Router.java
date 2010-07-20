@@ -25,8 +25,7 @@ public abstract class Router implements ActiveNode {
   protected String name;
   
   protected final int MAXQUEUESIZE=500;
-
-  private boolean serving=false;
+  
   private Vector<Packet> outgoingPackets;
   private TreeSet<Event> eventList;
   private Collection<Node> sources;
@@ -61,7 +60,6 @@ public abstract class Router implements ActiveNode {
    */
   @Override
   public void initialize(){
-    serving=false;
     simulationTime=0;
     eventList = new TreeSet<Event>(new EventComparator());
     outgoingPackets = new Vector<Packet>();
@@ -69,17 +67,6 @@ public abstract class Router implements ActiveNode {
   
   public int getCurrentSimulationTime(){
     return simulationTime;
-  }
-  
-  /**
-   * return true if the router is currently serving (transmitting) a packet
-   */
-  protected boolean isServing() {
-    return serving;
-  }
-
-  protected void setServing(boolean serving) {
-    this.serving = serving;
   }
   
   /**

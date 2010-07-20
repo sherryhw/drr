@@ -20,7 +20,8 @@ import event.Event;
  *         PhD students at IMTLucca http://imtlucca.it
  *
  */
-public class FifoRouter extends Router {  
+public class FifoRouter extends Router {
+  private boolean serving=false;
   private Vector<Packet> incomingPackets;
 
   /**
@@ -39,12 +40,24 @@ public class FifoRouter extends Router {
   @Override
   public void initialize() {
     super.initialize();
+    serving=false;
     incomingPackets = new Vector<Packet>(MAXQUEUESIZE);
+  }
+  
+  /**
+   * return true if the router is currently serving (transmitting) a packet
+   */
+  protected boolean isServing() {
+    return serving;
+  }
+
+  protected void setServing(boolean serving) {
+    this.serving = serving;
   }
   
   @Override
   protected void arrivalEventHandler(Event evt){
-    logger.debug("!!!!!!!!!!!!!!!start handling arrival event. incomingPackets.size="+incomingPackets.size()+ ". isServing= "+isServing()+". " + evt);
+    logger.debug("BEGIN handling arrival event. incomingPackets.size="+incomingPackets.size()+ ". isServing= "+isServing()+". " + evt);
     if(isServing()){
       //The router is busy, so I have to enqueue the packet, if there is still space in the queue.
       if(incomingPackets.size()==MAXQUEUESIZE){
@@ -58,14 +71,14 @@ public class FifoRouter extends Router {
     {
       //the router is currently idle. I can directly transmit the packet.
       createDepartureEvent(evt.getPacket());
-      setServing(true);///////////////////////
+      setServing(true);
     }
-    logger.debug("!!!!!!!!!!!!!!end handling arrival event. incomingPackets.size()="+incomingPackets.size() +". isServing= "+isServing());
+    logger.debug("END handling arrival event. incomingPackets.size()="+incomingPackets.size() +". isServing= "+isServing());
   }
   
   @Override
   protected void departureEventHandler(Event evt){
-    logger.debug("!!!!!!!!!!!!!!!start handling departure event. incomingPackets.size="+incomingPackets.size()+ ". isServing= "+isServing()+". " + evt);
+    logger.debug("BEGIN handling departure event. incomingPackets.size="+incomingPackets.size()+ ". isServing= "+isServing()+". " + evt);
     //First put the sent packet in the list of the outgoing packets 
     Packet sentPacket = evt.getPacket();
     addOutgoingPacket(sentPacket);  
@@ -82,7 +95,7 @@ public class FifoRouter extends Router {
       Packet nextPacket = incomingPackets.remove(0);
       createDepartureEvent(nextPacket);
     }
-    logger.debug("!!!!!!!!!!!!!!!end handling departure event. incomingPackets.size()="+incomingPackets.size() +". isServing= "+isServing());
+    logger.debug("END handling departure event. incomingPackets.size()="+incomingPackets.size() +". isServing= "+isServing());
   }
 
 }
