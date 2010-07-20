@@ -12,6 +12,15 @@ package org.imt.drr.model.statistics;
  */
 public class FlowStatistics {
 
+  /** packets counter. */
+  private int packetsCounter; 
+
+  /** packets counter. */
+  private int sizeCounter; 
+
+  /** flow id. */
+  private int flowId;
+
   /**
    * Default constructor. 
    * 
@@ -19,7 +28,7 @@ public class FlowStatistics {
    * @param flowId
    */
   public FlowStatistics(int flowId) {
-    this(0, flowId);
+    this(flowId, 0, 0);
   }
   
   /**
@@ -28,8 +37,9 @@ public class FlowStatistics {
    * @param packetsCounter
    * @param flowId
    */
-  public FlowStatistics(int packetsCounter, int flowId) {
+  public FlowStatistics(int flowId, int packetsCounter, int sizeCounter) {
     this.packetsCounter = packetsCounter;
+    this.sizeCounter = sizeCounter;
     this.flowId = flowId;
   }
   
@@ -37,15 +47,17 @@ public class FlowStatistics {
    * Increase counter.
    */
   public void inc() {
-    
+    packetsCounter++;
+  }
+
+  /**
+   * Increase size.
+   */
+  public void incSize(int size) {
+    this.sizeCounter += size; 
+    inc();
   }
   
-  /** packets counter. */
-  private int packetsCounter; 
-  
-  /** flow id. */
-  private int flowId;
-
   /**
    * @param packetsCounter the packetsCounter to set
    */
@@ -73,5 +85,19 @@ public class FlowStatistics {
   public int getFlowId() {
     return flowId;
   }
-  
+
+  /**
+   * @return the sizeCounter
+   */
+  public int getSizeCounter() {
+    return sizeCounter;
+  }
+
+  /**
+   * @param sizeCounter the sizeCounter to set
+   */
+  public void setSizeCounter(int sizeCounter) {
+    this.sizeCounter = sizeCounter;
+  }
+
 }

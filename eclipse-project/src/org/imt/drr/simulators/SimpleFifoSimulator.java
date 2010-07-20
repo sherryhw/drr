@@ -43,11 +43,18 @@ public class SimpleFifoSimulator implements Simulator {
   public void execute() {
     logger.info("Execute simulation....");   
     for (int i = 0; i < duration; i++ ) {
-      logger.info("#####################SIMULATION STEP i = " + i + "#####################");
+      logger.info("#######################################################################");
+      logger.info("#####################SIMULATION STEP = " + i);
+      logger.info("#####################           TIME = " + router.getCurrentSimulationTime());
+      logger.info("#######################################################################");
       host.proceedNextEvent();
       router.proceedNextEvent();
     }
     logger.info("End of simulation....");   
+    for (int i = 0; i < stats.getFlowsStatistics().size(); i++) {
+      float throughout = stats.getThroughput(i);
+      logger.info("############## " + i + " flow troughput is " + throughout + " ################");
+    }
   }
 
   /* (non-Javadoc)
@@ -60,9 +67,9 @@ public class SimpleFifoSimulator implements Simulator {
     host.initialize();
     Vector<Node> sources = new Vector<Node> (); 
     sources.add(host);
-    router = new FifoRouter(sources, 1);
-    router.initialize();
     stats = new Statistics();
+    router = new FifoRouter(sources, 1, stats, "MainRouter");
+    router.initialize();
     logger.info("End of the initialization of the FifoSimulator....");   
   }
 

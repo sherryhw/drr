@@ -9,6 +9,7 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.imt.drr.model.statistics.Statistics;
 
 import event.Event;
 import event.EventComparator;
@@ -20,15 +21,21 @@ import event.EventType;
  *
  */
 public abstract class Router implements ActiveNode {
+  
+  protected String name;
+  
   protected final int MAXQUEUESIZE=500;
 
   private boolean serving=false;
-  private final int bandwidth; 
-  private final boolean zeroTransmissionTime;
-  private int simulationTime;
   private Vector<Packet> outgoingPackets;
   private TreeSet<Event> eventList;
   private Collection<Node> sources;
+
+  private final int bandwidth; 
+  private int simulationTime;
+  
+  /** Object for gathering statistics. */
+  protected Statistics stats;
   
   /**
    * Logger
@@ -36,15 +43,16 @@ public abstract class Router implements ActiveNode {
   static Logger logger = Logger.getLogger(Router.class);
 
   public Router(Collection<Node> sources, int bandwidth){
-    this(sources,bandwidth,false);
+    this(sources, bandwidth, null, "Router");
   }
   
-  public Router(Collection<Node> sources, int bandwidth, boolean zeroTransimissionTime){
-    this.zeroTransmissionTime = zeroTransimissionTime;
+  public Router(Collection<Node> sources, int bandwidth, Statistics stats, String name){
+    this.stats = stats;
     logger.info("Router constructor");
     this.bandwidth=bandwidth;
     //initialize();
     this.sources=sources;
+    this.name = name;
   }
 
   
@@ -59,7 +67,7 @@ public abstract class Router implements ActiveNode {
     outgoingPackets = new Vector<Packet>();
   }
   
-  protected int getCurrentSimulationTime(){
+  public int getCurrentSimulationTime(){
     return simulationTime;
   }
   
@@ -110,10 +118,10 @@ public abstract class Router implements ActiveNode {
    * Ask to the sources to send a packet
    */
   protected void askNewPackets(){
-    logger.info("ask new packets (size of sources = " + sources.size() + ")");
+    logger.debug("ASK NEW PACKETS (size of sources = " + sources.size() + ")");
     for (Node node : sources) {
       Packet p = node.getNextPacket();
-      logger.info("+++++node " + node + " returned packet " + p);
+      logger.debug("+++++node " + node + " returned packet " + p);
       if(p != null){
         createArrivalEvent(p);
       }
@@ -134,7 +142,7 @@ public abstract class Router implements ActiveNode {
    * Evaluate the transmission time of the packet, basing on its size and on the bandwidth
    */
   private int evaluateTransimissionTime(Packet p){
-    if(this.zeroTransmissionTime){
+    if(bandwidth == Integer.MAX_VALUE){
       return 0;
     }
     else{
@@ -166,13 +174,13 @@ public abstract class Router implements ActiveNode {
    */
   @Override
   public void proceedNextEvent() {
-    logger.info("router.ProceedNextEvent");
+    logger.debug("router.ProceedNextEvent");
     //As first step I have to ask a new packet to every source node
     askNewPackets();
-    logger.info("after ask new packets eventList.size = " + eventList.size());
+    logger.debug("after ask new packets eventList.size = " + eventList.size());
     //then I really proceed the next event
     Event evt = getNextEventUpdateSimulationTime();
-    logger.info("after getNextEventUpdateSimulationTime, eventList.size="+eventList.size()+", simulationTime: " + simulationTime);
+    logger.debug("after getNextEventUpdateSimulationTime, eventList.size="+eventList.size()+", simulationTime: " + simulationTime);
     if(evt != null){
       switch(evt.getType()){
       case ARRIVAL:
@@ -182,6 +190,14 @@ public abstract class Router implements ActiveNode {
         departureEventHandler(evt);
         break;
       }
+    }
+    //Some logging here 
+    String log = "";
+    for (int i = 0; i < outgoingPackets.size(); i++) {
+      log += "pack#" + i + " = " + outgoingPackets.get(i) + "\n";
+    }
+    if (log.length() > 0) {
+      logger.info(name + " " + log);
     }
   }
   
