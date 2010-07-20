@@ -25,6 +25,8 @@ public abstract class Router implements ActiveNode {
   
   protected final int MAXQUEUESIZE=500;
   
+  public static final int DEFAULT_BANDWIDTH = 1000;
+  
   private Vector<Packet> outgoingPackets;
   private TreeSet<Event> eventList;
   private Vector<Node> sources;
@@ -162,7 +164,9 @@ public abstract class Router implements ActiveNode {
    * Create the departureEvent associated to the packet in the argument
    */
   protected void createDepartureEvent(Packet p){
-    Event departureEvent=new Event(p, simulationTime+evaluateTransimissionTime(p), EventType.DEPARTURE, Integer.MIN_VALUE);
+    int departureTime=simulationTime+evaluateTransimissionTime(p);
+    p.setDepartureTime(departureTime);
+    Event departureEvent=new Event(p, departureTime, EventType.DEPARTURE, Integer.MIN_VALUE);
     eventList.add(departureEvent);
   }
   
@@ -172,7 +176,7 @@ public abstract class Router implements ActiveNode {
    */
   protected int createDepartureEvent(Packet p, int time){
     int departureTime=time+evaluateTransimissionTime(p);
-    p.setDepartureTime(departureTime);
+    p.setDepartureTime(departureTime);//TODO: controlla,probabilmente non va bene
     Event departureEvent=new Event(p, departureTime, EventType.DEPARTURE, Integer.MIN_VALUE);
     eventList.add(departureEvent);
     return departureTime;

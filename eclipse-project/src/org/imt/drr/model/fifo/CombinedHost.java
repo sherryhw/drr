@@ -31,7 +31,7 @@ public class CombinedHost implements ActiveNode {
   
   /** Default initialization. */
   public void initialize() {
-    initialize(Host.DEFAULT_PACKET_SIZE_MAX, Host.DEFAULT_ARRIVAL_TIME_MEAN, 0, Host.DEFAULT_NUMBER_OF_FLOWS, HostType.RANDOM_SIZE, true);
+    initialize(Host.DEFAULT_PACKET_SIZE_MAX, Host.DEFAULT_ARRIVAL_TIME_MEAN, 0, Host.DEFAULT_NUMBER_OF_FLOWS, HostType.RANDOM_SIZE, false);
   }
   
   /**
@@ -50,11 +50,11 @@ public class CombinedHost implements ActiveNode {
     flows = new Vector<Node>();
     for (int i = 0; i < flowsCount - 1; i++) {
       Host flow = new Host();
-      if (includeIllBehaved && (i == 0)) {
-        flow.initialize(packetSizeMax, arrivalTimeMean / 3, i, 1, type);
-      } else {
+//      if (includeIllBehaved && (i == 0)) {
+//        flow.initialize(packetSizeMax, arrivalTimeMean / 3, i, 1, type);
+//      } else {
         flow.initialize(packetSizeMax, arrivalTimeMean, i, 1, type);
-      }
+//      }
       flows.add(flow);
     }
     logger.info("Size of flows in combined host " + flows.size());
