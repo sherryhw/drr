@@ -19,7 +19,7 @@ import event.EventType;
  *         PhD students at IMTLucca http://imtlucca.it
  *
  */
-public abstract class Router implements Node {
+public abstract class Router implements ActiveNode {
   protected final int MAXQUEUESIZE=500;
 
   private boolean serving=false;
@@ -40,7 +40,7 @@ public abstract class Router implements Node {
   }
   
   public Router(Collection<Node> sources, int bandwidth, boolean zeroTransimissionTime){
-    this.zeroTransmissionTime=false;
+    this.zeroTransmissionTime = zeroTransimissionTime;
     logger.info("Router constructor");
     this.bandwidth=bandwidth;
     //initialize();
@@ -110,9 +110,11 @@ public abstract class Router implements Node {
    * Ask to the sources to send a packet
    */
   protected void askNewPackets(){
+    logger.info("ask new packets (size of sources = " + sources.size() + ")");
     for (Node node : sources) {
       Packet p = node.getNextPacket();
-      if(p!=null){
+      logger.info("+++++node " + node + " returned packet " + p);
+      if(p != null){
         createArrivalEvent(p);
       }
     }
@@ -122,7 +124,7 @@ public abstract class Router implements Node {
    * Create the arrivalEvent associated to the packet in the argument
    */
   private void createArrivalEvent(Packet p){
-    int arrivalTime=simulationTime+p.getInterarrivalTime();
+    int arrivalTime = simulationTime + p.getInterarrivalTime();
     p.setArrivalTimeInRouter(arrivalTime);
     Event evt = new Event(p, arrivalTime , EventType.ARRIVAL);
     eventList.add(evt);
@@ -151,6 +153,7 @@ public abstract class Router implements Node {
   /**
    * The main process of router. 
    */
+  @Override
   public void proceedNextEvent() {
     logger.info("router.ProceedNextEvent");
     //As first step I have to ask a new packet to every source node

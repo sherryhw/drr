@@ -1,33 +1,36 @@
 /**
  * 
  */
-package org.imt.drr.model.fifo;
+package org.imt.drr.simulators;
 
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
-import org.imt.drr.model.Host;
 import org.imt.drr.model.Node;
 import org.imt.drr.model.Simulator;
+import org.imt.drr.model.fifo.CombinedHost;
+import org.imt.drr.model.fifo.FifoRouter;
+import org.imt.drr.model.statistics.Statistics;
 
 /**
  * @author Andrea Vandin, Dmytro Karamshuk, Iffat Ahmed 
  *         PhD students at IMTLucca http://imtlucca.it
  *
  */
-public class FifoSimulator implements Simulator {
+public class SimpleFifoSimulator implements Simulator {
 
-  /**
-   * Logger
-   */
-  static Logger logger = Logger.getLogger(FifoSimulator.class);
+  /** Logger */
+  static Logger logger = Logger.getLogger(SimpleFifoSimulator.class);
 
   /** An instance of fifo router. */
-  public FifoRouter router,router2;
+  private FifoRouter router;
 
   /** An instance of host. */
-  public Host host;
-
+  private CombinedHost host;
+  
+  /** Statistics */
+  private Statistics stats;
+  
   /**
    * Number of loops to proceed. 
    */
@@ -40,6 +43,8 @@ public class FifoSimulator implements Simulator {
   public void execute() {
     logger.info("Execute simulation....");   
     for (int i = 0; i < duration; i++ ) {
+      logger.info("#####################SIMULATION STEP i = " + i + "#####################");
+      host.proceedNextEvent();
       router.proceedNextEvent();
     }
     logger.info("End of simulation....");   
@@ -51,18 +56,13 @@ public class FifoSimulator implements Simulator {
   @Override
   public void initialize() {
     logger.info("Initialization of the FifoSimulator....");   
-    host = new Host();
+    host = new CombinedHost();
     host.initialize();
-    Vector<Node> sources = new Vector<Node>(); 
+    Vector<Node> sources = new Vector<Node> (); 
     sources.add(host);
-    router = new FifoRouter(sources, 100);
+    router = new FifoRouter(sources, 1);
     router.initialize();
-    
-    /*sources = new Vector<Node>();
-    sources.add(router);
-    router2 = new FifoRouter(sources, 100000);
-    router2.initialize();*/
-    
+    stats = new Statistics();
     logger.info("End of the initialization of the FifoSimulator....");   
   }
 

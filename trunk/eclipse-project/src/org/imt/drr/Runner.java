@@ -5,7 +5,7 @@ package org.imt.drr;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.imt.drr.model.fifo.FifoSimulator;
+import org.imt.drr.simulators.SimpleFifoSimulator;
 
 /**
  * The main application launch class.
@@ -32,11 +32,9 @@ public class Runner {
     PropertyConfigurator.configure("log/log4j.properties");
     
     //We just start with creating simple Fifo Simulator
-    FifoSimulator simulator = new FifoSimulator();
+    SimpleFifoSimulator simulator = new SimpleFifoSimulator();
     simulator.initialize(100);
     simulator.execute();
-    logger.debug("fuck off");
-    
   }
 
 }

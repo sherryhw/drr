@@ -28,18 +28,18 @@ public class FifoRouter extends Router {
   static Logger logger = Logger.getLogger(Router.class);
   
   public FifoRouter(Collection<Node> sources, int bandwidth){
-    this(sources,bandwidth,false);
+    this(sources, bandwidth, false);
   }
   
   public FifoRouter(Collection<Node> sources, int bandwidth, boolean zeroServiceTime){
-    super(sources,bandwidth,zeroServiceTime);
+    super(sources, bandwidth, zeroServiceTime);
     logger.info("FifoRouter constructor");
   }
   
   @Override
   public void initialize() {
     super.initialize();
-   incomingPackets = new Vector<Packet>(MAXQUEUESIZE);
+    incomingPackets = new Vector<Packet>(MAXQUEUESIZE);
   }
   
   @Override
