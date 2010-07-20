@@ -21,8 +21,12 @@ public class EventComparator implements Comparator<Event>
     if(order==0){
       if(event1.getId() < event2.getId())
         order=-1;
-      else
-        order=1;
+      else{ 
+        if(event1.getId() == event2.getId())
+          order=0;
+        else
+          order=1;
+      }
     }
     return order;
   }
