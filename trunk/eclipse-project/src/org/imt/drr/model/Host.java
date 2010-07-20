@@ -30,7 +30,7 @@ public class Host implements Node {
 
   /** Some constants. */
   public static final int DEFAULT_PACKET_SIZE_MAX = 4096;  
-  public static final int DEFAULT_NUMBER_OF_FLOWS = 20;
+  public static final int DEFAULT_NUMBER_OF_FLOWS = 3; //20;
   public static final int DEFAULT_ARRIVAL_TIME_MEAN = 100;
   
   /** Mean of the size of the packet. */
@@ -54,7 +54,7 @@ public class Host implements Node {
   @Override
   public Packet getNextPacket() {
     int size;
-    if (type == HostType.RANDOM_SIZE) {
+    if (type == HostType.CONSTANT_SIZE) {
       size = (int) Math.round(randomSize.nextUniform(0, packetSizeMax));
     } else {
       size = packetSizeMax;
