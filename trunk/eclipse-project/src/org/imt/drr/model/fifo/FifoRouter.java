@@ -19,9 +19,7 @@ import event.Event;
  *         PhD students at IMTLucca http://imtlucca.it
  *
  */
-public class FifoRouter extends Router {
-  private final int MAXQUEUESIZE=500;
-  
+public class FifoRouter extends Router {  
   private Vector<Packet> incomingPackets;
 
   /**
