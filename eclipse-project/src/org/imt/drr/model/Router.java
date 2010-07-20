@@ -20,6 +20,8 @@ import event.EventType;
  *
  */
 public abstract class Router implements Node {
+  protected final int MAXQUEUESIZE=500;
+
   private boolean serving=false;
   private final int bandwidth; 
   private final boolean zeroTransmissionTime;
