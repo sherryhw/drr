@@ -22,6 +22,7 @@ import event.EventType;
 public abstract class Router implements Node {
   private boolean serving=false;
   private final int bandwidth; 
+  private final boolean zeroTransmissionTime;
   private int simulationTime;
   private Vector<Packet> outgoingPackets;
   private TreeSet<Event> eventList;
@@ -33,14 +34,22 @@ public abstract class Router implements Node {
   static Logger logger = Logger.getLogger(Router.class);
 
   public Router(Collection<Node> sources, int bandwidth){
+    this(sources,bandwidth,false);
+  }
+  
+  public Router(Collection<Node> sources, int bandwidth, boolean zeroTransimissionTime){
+    this.zeroTransmissionTime=false;
+    logger.info("Router constructor");
     this.bandwidth=bandwidth;
-    initialize();
+    //initialize();
     this.sources=sources;
   }
+
   
   /*
    * Initialize the router.
    */
+  @Override
   public void initialize(){
     serving=false;
     simulationTime=0;
@@ -121,7 +130,12 @@ public abstract class Router implements Node {
    * Evaluate the transmission time of the packet, basing on its size and on the bandwidth
    */
   private int evaluateTransimissionTime(Packet p){
-    return p.getSize()/bandwidth;
+    if(this.zeroTransmissionTime){
+      return 0;
+    }
+    else{
+      return p.getSize()/bandwidth; 
+    }
   }
   
   /**
@@ -136,13 +150,13 @@ public abstract class Router implements Node {
    * The main process of router. 
    */
   public void proceedNextEvent() {
-    logger.info("Proceed the step of simulation");
+    logger.info("router.ProceedNextEvent");
     //As first step I have to ask a new packet to every source node
     askNewPackets();
     logger.info("after ask new packets eventList.size = " + eventList.size());
     //then I really proceed the next event
     Event evt = getNextEventUpdateSimulationTime();
-    logger.info("updated simulation " + simulationTime);
+    logger.info("after getNextEventUpdateSimulationTime, eventList.size="+eventList.size()+", simulationTime: " + simulationTime);
     if(evt != null){
       switch(evt.getType()){
       case ARRIVAL:

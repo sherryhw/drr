@@ -30,19 +30,23 @@ public class FifoRouter extends Router {
   static Logger logger = Logger.getLogger(Router.class);
   
   public FifoRouter(Collection<Node> sources, int bandwidth){
-    super(sources,bandwidth);
-    initialize();
+    this(sources,bandwidth,false);
+  }
+  
+  public FifoRouter(Collection<Node> sources, int bandwidth, boolean zeroServiceTime){
+    super(sources,bandwidth,zeroServiceTime);
+    logger.info("FifoRouter constructor");
   }
   
   @Override
   public void initialize() {
-    //Do not initialize fields of the superclass
+    super.initialize();
    incomingPackets = new Vector<Packet>(MAXQUEUESIZE);
   }
   
   @Override
   protected void arrivalEventHandler(Event evt){
-    logger.info("start handling arrival event " + evt);
+    logger.info("!!!!!!!!!!!!!!!start handling arrival event. incomingPackets.size="+incomingPackets.size()+ ". isServing= "+isServing()+". " + evt);
     if(isServing()){
       //The router is busy, so I have to enqueue the packet, if there is still space in the queue.
       if(incomingPackets.size()==MAXQUEUESIZE){
@@ -56,13 +60,15 @@ public class FifoRouter extends Router {
     {
       //the router is currently idle. I can directly transmit the packet.
       createDepartureEvent(evt.getPacket());
+      setServing(true);///////////////////////
     }
+    logger.info("!!!!!!!!!!!!!!end handling arrival event. incomingPackets.size()="+incomingPackets.size() +". isServing= "+isServing());
   }
   
   @Override
   protected void departureEventHandler(Event evt){
-    logger.info("start handling departure event " + evt);
-    //First put the sent packet in the list of the outgoing packets
+    logger.info("!!!!!!!!!!!!!!!start handling departure event. incomingPackets.size="+incomingPackets.size()+ ". isServing= "+isServing()+". " + evt);
+    //First put the sent packet in the list of the outgoing packets 
     Packet sentPacket = evt.getPacket();
     addOutgoingPacket(sentPacket);  
     //Then create the next departure event if there are any packets in the incomingList
@@ -73,6 +79,7 @@ public class FifoRouter extends Router {
       Packet nextPacket = incomingPackets.remove(0);
       createDepartureEvent(nextPacket);
     }
+    logger.info("!!!!!!!!!!!!!!!end handling departure event. incomingPackets.size()="+incomingPackets.size() +". isServing= "+isServing());
   }
 
 }

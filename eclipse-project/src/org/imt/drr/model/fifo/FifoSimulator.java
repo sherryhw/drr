@@ -23,7 +23,7 @@ public class FifoSimulator implements Simulator {
   static Logger logger = Logger.getLogger(FifoSimulator.class);
 
   /** An instance of fifo router. */
-  public FifoRouter router;
+  public FifoRouter router,router2;
 
   /** An instance of host. */
   public Host host;
@@ -53,10 +53,16 @@ public class FifoSimulator implements Simulator {
     logger.info("Initialization of the FifoSimulator....");   
     host = new Host();
     host.initialize();
-    Vector<Node> sources = new Vector<Node> (); 
+    Vector<Node> sources = new Vector<Node>(); 
     sources.add(host);
-    router = new FifoRouter(sources, 1);
+    router = new FifoRouter(sources, 100000);
     router.initialize();
+    
+    /*sources = new Vector<Node>();
+    sources.add(router);
+    router2 = new FifoRouter(sources, 100000);
+    router2.initialize();*/
+    
     logger.info("End of the initialization of the FifoSimulator....");   
   }
 

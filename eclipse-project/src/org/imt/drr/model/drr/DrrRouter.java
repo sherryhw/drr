@@ -25,7 +25,7 @@ public class DrrRouter extends Router {
 
   @Override
   public void initialize() {
-    //Do not initialize fields of the superclass
+    super.initialize();
   }
 
   @Override
