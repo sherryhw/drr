@@ -8,7 +8,8 @@ package org.imt.drr.model;
 public class Packet {
 
   private int idFlow, size, interarrivalTime, arrivalTimeInRouter;
-  
+  private int departureTime;
+
   private final int id;
   
   private static int idCounter = 0;
@@ -19,6 +20,20 @@ public class Packet {
   	this.size = size;
   	this.interarrivalTime = interarrivalTime;
   	this.id = idCounter++;
+  }
+  
+  /**
+   * @return the departureTime
+   */
+  public int getDepartureTime() {
+    return departureTime;
+  }
+
+  /**
+   * @param departureTime the departureTime to set
+   */
+  public void setDepartureTime(int departureTime) {
+    this.departureTime = departureTime;
   }
   
   public int getId(){
@@ -56,7 +71,7 @@ public class Packet {
   public String toString(){
     return "{id = " + id + ", idFlow = " + idFlow + ", size = " + 
       size + ", interarrivalTime = " + 
-      interarrivalTime + ", arrivalTimeInRouter = " + arrivalTimeInRouter + "}";
+      interarrivalTime + ", arrivalTimeInRouter = " + arrivalTimeInRouter + ", departureTimeFromRouter = " + departureTime + "}";
   }
 
 }

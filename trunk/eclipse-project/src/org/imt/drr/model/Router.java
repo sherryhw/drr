@@ -172,6 +172,7 @@ public abstract class Router implements ActiveNode {
    */
   protected int createDepartureEvent(Packet p, int time){
     int departureTime=time+evaluateTransimissionTime(p);
+    p.setDepartureTime(departureTime);
     Event departureEvent=new Event(p, departureTime, EventType.DEPARTURE, Integer.MIN_VALUE);
     eventList.add(departureEvent);
     return departureTime;
@@ -207,9 +208,13 @@ public abstract class Router implements ActiveNode {
     for (int i = 0; i < outgoingPackets.size(); i++) {
       log += "pack#" + i + " = " + outgoingPackets.get(i) + "\n";
     }
-    if (log.length() > 0) {
-      logger.info(name + " " + log);
+    log += "\n\n";
+    //Some logging here 
+    for (Event event : eventList) {
+      log += "event#" + event.getId() + " = " + event + "\n";
+      
     }
+    logger.info("\n" + name + "\n" + log);
   }
   
   /**
