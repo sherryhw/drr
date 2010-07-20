@@ -5,27 +5,33 @@ package org.imt.drr.model;
 
 import org.apache.commons.math.random.RandomData;
 import org.apache.commons.math.random.RandomDataImpl;
+import org.apache.log4j.Logger;
 
 /**
+ * This is just the simple host that generates flows with the same parameters. 
+ * 
  * @author Andrea Vandin, Dmytro Karamshuk, Iffat Ahmed 
  *         PhD students at IMTLucca http://imtlucca.it
  *
  */
 public class Host implements Node {
 
+  /** Logger */
+  static Logger logger = Logger.getLogger(Host.class);
+
   /** Random number generator for the size. */
-  private RandomData randomSize;
+  private static RandomData randomSize = new RandomDataImpl();
 
   /** Random number generator for the arrival times. */
-  private RandomData randomArrival;
+  private static RandomData randomArrival = new RandomDataImpl();
 
   /** Random number generator for the flow Id. */
-  private RandomData randomFlowId;
+  private static RandomData randomFlowId = new RandomDataImpl();
 
   /** Some constants. */
-  public final int DEFAULT_PACKET_SIZE_MAX = 4096;  
-  public final int DEFAULT_NUMBER_OF_FLOWS = 20;
-  public final int DEFAULT_ARRIVAL_TIME_MEAN = 100;
+  public static final int DEFAULT_PACKET_SIZE_MAX = 4096;  
+  public static final int DEFAULT_NUMBER_OF_FLOWS = 20;
+  public static final int DEFAULT_ARRIVAL_TIME_MEAN = 100;
   
   /** Mean of the size of the packet. */
   private int packetSizeMax; 
@@ -54,8 +60,9 @@ public class Host implements Node {
       size = packetSizeMax;
     }
     int flowId = (int) Math.round(randomFlowId.nextUniform(flowsLower, flowsLower + flowsCount));
-    int arrivalTime = (int) Math.round(randomArrival.nextExponential(arrivalTimeMean));
+    int arrivalTime = (int) Math.round(randomArrival.nextExponential(arrivalTimeMean * flowsCount));
     Packet packet = new Packet(flowId, size, arrivalTime);
+    //logger.info("Getting next packet from the host " + packet);
     return packet;
   }
 
@@ -67,9 +74,10 @@ public class Host implements Node {
     packetSizeMax = DEFAULT_PACKET_SIZE_MAX;
     arrivalTimeMean = DEFAULT_ARRIVAL_TIME_MEAN;
     //create random generators for all
-    randomArrival = new RandomDataImpl();
-    randomFlowId = new RandomDataImpl();
-    randomSize = new RandomDataImpl();
+//    logger.info("Create random generators");
+//    randomArrival = new RandomDataImpl();
+//    randomFlowId = new RandomDataImpl();
+//    randomSize = new RandomDataImpl();
     type = HostType.RANDOM_SIZE;
   }
   
@@ -150,5 +158,12 @@ public class Host implements Node {
    */
   public void setType(HostType type) {
     this.type = type;
+  }
+  
+  /**
+   * Returns string.
+   */
+  public String toString() {
+    return "Host";
   }
 }
