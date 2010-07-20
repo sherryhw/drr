@@ -151,6 +151,17 @@ public abstract class Router implements ActiveNode {
   }
   
   /**
+   * Create the departureEvent associated to the packet in the argument, but evaluate its departure time starting from the time given as argument
+   * Return the departure time 
+   */
+  protected int createDepartureEvent(Packet p, int time){
+    int departureTime=time+evaluateTransimissionTime(p);
+    Event departureEvent=new Event(p, departureTime, EventType.DEPARTURE);
+    eventList.add(departureEvent);
+    return departureTime;
+  }
+  
+  /**
    * The main process of router. 
    */
   @Override
