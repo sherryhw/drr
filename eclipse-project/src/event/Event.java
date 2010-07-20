@@ -13,6 +13,15 @@ public class Event {
   private Packet packet;
   private final int id;
 
+  private final int sourceId;
+
+  /**
+   * @return the flowId
+   */
+  public int getSourceId() {
+    return sourceId;
+  }
+
   private static int idCounter=0;
   
   public int getTime() {
@@ -31,12 +40,13 @@ public class Event {
     return packet;
   }
 
-  public Event(Packet packet, int time, EventType type) {
+  public Event(Packet packet, int time, EventType type, int sourceId) {
     super();
     this.packet = packet;
     this.time = time;
     this.type = type;
     this.id=idCounter++;
+    this.sourceId = sourceId;
   }
   
   /**

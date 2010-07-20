@@ -4,7 +4,6 @@
 package org.imt.drr.model.fifo;
 
 import java.nio.BufferOverflowException;
-import java.util.Collection;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -29,11 +28,11 @@ public class FifoRouter extends Router {
    */
   static Logger logger = Logger.getLogger(Router.class);
 
-  public FifoRouter(Collection<Node> sources, int bandwidth){
+  public FifoRouter(Vector<Node> sources, int bandwidth){
     this(sources, bandwidth, null, "FifoRouter");
   }
 
-  public FifoRouter(Collection<Node> sources, int bandwidth, Statistics stats, String name){
+  public FifoRouter(Vector<Node> sources, int bandwidth, Statistics stats, String name){
     super(sources, bandwidth, stats, name);
   }
   
@@ -57,7 +56,8 @@ public class FifoRouter extends Router {
   
   @Override
   protected void arrivalEventHandler(Event evt){
-    logger.debug("BEGIN handling arrival event. incomingPackets.size="+incomingPackets.size()+ ". isServing= "+isServing()+". " + evt);
+    askNewPackets();
+    logger.debug("!!!!!!!!!!!!!!!start handling arrival event. incomingPackets.size="+incomingPackets.size()+ ". isServing= "+isServing()+". " + evt);
     if(isServing()){
       //The router is busy, so I have to enqueue the packet, if there is still space in the queue.
       if(incomingPackets.size()==MAXQUEUESIZE){
@@ -96,6 +96,11 @@ public class FifoRouter extends Router {
       createDepartureEvent(nextPacket);
     }
     logger.debug("END handling departure event. incomingPackets.size()="+incomingPackets.size() +". isServing= "+isServing());
+  }
+
+  @Override
+  protected void nopeEventHandler(Event evt){
+    askNewPackets(evt.getSourceId());
   }
 
 }
