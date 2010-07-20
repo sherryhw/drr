@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.imt.drr.model.Node;
 import org.imt.drr.model.Packet;
 import org.imt.drr.model.Router;
+import org.imt.drr.model.statistics.Statistics;
 
 import event.Event;
 
@@ -34,6 +35,11 @@ public class DrrRouter extends Router {
 
   public DrrRouter(Vector<Node> sources, int bandwidth, int numberOfFlows) {
     super(sources, bandwidth);
+    this.numberOfFlows = numberOfFlows;
+  }
+
+  public DrrRouter(Vector<Node> sources, int bandwidth, int numberOfFlows, Statistics stats, String name) {
+    super(sources, bandwidth, stats, name);
     this.numberOfFlows = numberOfFlows;
   }
 
