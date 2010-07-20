@@ -137,9 +137,4 @@ public class DrrRouter extends Router {
     }
   }
 
-  @Override
-  protected void nopeEventHandler(Event evt){
-    askNewPackets(evt.getSourceId());
-  }
-
 }

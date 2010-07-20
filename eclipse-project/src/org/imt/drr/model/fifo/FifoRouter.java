@@ -56,7 +56,6 @@ public class FifoRouter extends Router {
   
   @Override
   protected void arrivalEventHandler(Event evt){
-    askNewPackets();
     logger.debug("!!!!!!!!!!!!!!!start handling arrival event. incomingPackets.size="+incomingPackets.size()+ ". isServing= "+isServing()+". " + evt);
     if(isServing()){
       //The router is busy, so I have to enqueue the packet, if there is still space in the queue.
@@ -96,11 +95,6 @@ public class FifoRouter extends Router {
       createDepartureEvent(nextPacket);
     }
     logger.debug("END handling departure event. incomingPackets.size()="+incomingPackets.size() +". isServing= "+isServing());
-  }
-
-  @Override
-  protected void nopeEventHandler(Event evt){
-    askNewPackets(evt.getSourceId());
   }
 
 }
