@@ -30,10 +30,20 @@ public abstract class Router implements ActiveNode {
   private Vector<Packet> outgoingPackets;
   private TreeSet<Event> eventList;
   private Vector<Node> sources;
+  
+  private Vector<Integer> sourceTimeCounters;
 
   private final int bandwidth; 
   private int simulationTime;
+  private boolean cleanOutgoing;
   
+  /**
+   * @return the cleanOutgoing
+   */
+  public boolean isCleanOutgoing() {
+    return cleanOutgoing;
+  }
+
   /** Object for gathering statistics. */
   protected Statistics stats;
   
@@ -43,13 +53,14 @@ public abstract class Router implements ActiveNode {
   static Logger logger = Logger.getLogger(Router.class);
 
   public Router(Vector<Node> sources, int bandwidth){
-    this(sources, bandwidth, null, "Router");
+    this(sources, bandwidth, null, "Router", false);
   }
   
-  public Router(Vector<Node> sources, int bandwidth, Statistics stats, String name){
+  public Router(Vector<Node> sources, int bandwidth, Statistics stats, String name, boolean cleanOutgoing){
     this.stats = stats;
+    this.cleanOutgoing = cleanOutgoing;
     logger.info("Router constructor");
-    this.bandwidth=bandwidth;
+    this.bandwidth = bandwidth;
     //initialize();
     this.sources=sources;
     this.name = name;
@@ -63,11 +74,20 @@ public abstract class Router implements ActiveNode {
   public void initialize(){
     simulationTime = 0;
     eventList = new TreeSet<Event>(new EventComparator());
+    sourceTimeCounters = new Vector<Integer>();
     outgoingPackets = new Vector<Packet>();
     for (int i = 0; i < sources.size(); i++) {
       Event nopeEvent = new Event(null, simulationTime, EventType.NOPE, i);
       eventList.add(nopeEvent);
+      sourceTimeCounters.add(new Integer(Integer.MIN_VALUE));
     }
+    String log = "\n";
+    //Some logging here 
+    for (Event event : eventList) {
+      log += "event#" + event.getId() + " = " + event + "\n";
+      
+    }
+    logger.info("\n" + name + "\n" + log);
   }
   
   public int getCurrentSimulationTime(){
@@ -92,7 +112,9 @@ public abstract class Router implements ActiveNode {
    * Add a sent packet to the list of the outgoing packets
    */
   protected void addOutgoingPacket(Packet p){
-    outgoingPackets.add(p);
+    if (!(isCleanOutgoing() && outgoingPackets.size() > 10)) { 
+      outgoingPackets.add(p);
+    }
   }
   
   /**
@@ -112,7 +134,9 @@ public abstract class Router implements ActiveNode {
   protected void askNewPackets(){
     logger.debug("ASK NEW PACKETS (size of sources = " + sources.size() + ")");
     for (int i = 0; i < sources.size(); i++) {
-      askNewPackets(i);
+      if (sourceTimeCounters.get(i) <= simulationTime) {
+        askNewPackets(i);
+      }
     }
   }
 
@@ -123,8 +147,9 @@ public abstract class Router implements ActiveNode {
     Node node = sources.get(sourceId);
     Packet p = node.getNextPacket();
     logger.debug("+++++node " + node + " returned packet " + p);
-    if(p != null){
+    if (p != null){
       createArrivalEvent(p);
+      sourceTimeCounters.set(sourceId, simulationTime + p.getInterarrivalTime());
     } else { 
       createNopeEvent(sourceId);
     }
@@ -136,7 +161,7 @@ public abstract class Router implements ActiveNode {
   private void createArrivalEvent(Packet p){
     int arrivalTime = simulationTime + p.getInterarrivalTime();
     p.setArrivalTimeInRouter(arrivalTime);
-    Event evt = new Event(p, arrivalTime , EventType.ARRIVAL, p.getIdFlow());
+    Event evt = new Event(p, arrivalTime , EventType.ARRIVAL, Integer.MIN_VALUE);
     eventList.add(evt);
   }
   
@@ -209,17 +234,17 @@ public abstract class Router implements ActiveNode {
       }
     }
     //Some logging here 
-    String log = "\n";
+    String log = "";
     for (int i = 0; i < outgoingPackets.size(); i++) {
       log += "pack#" + i + " = " + outgoingPackets.get(i) + "\n";
     }
-    log += "\n\n";
+    log += "\n";
     //Some logging here 
     for (Event event : eventList) {
       log += "event#" + event.getId() + " = " + event + "\n";
       
     }
-    logger.info("\n" + name + "\n" + log);
+    logger.info("\n__________" + name + "__________\n\n" + log);
   }
   
   /**

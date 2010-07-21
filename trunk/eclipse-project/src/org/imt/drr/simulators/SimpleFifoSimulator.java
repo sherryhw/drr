@@ -33,7 +33,7 @@ public class SimpleFifoSimulator implements Simulator {
   private Statistics stats;
   
   /**
-   * Number of loops to proceed. 
+   * Duration of the simulation in ticks. 
    */
   public int duration;
   
@@ -43,17 +43,21 @@ public class SimpleFifoSimulator implements Simulator {
   @Override
   public void execute() {
     logger.warn("Execute simulation....");   
-    for (int i = 0; i < duration; i++ ) {
+    int j = 0;
+    while (router.getCurrentSimulationTime() < duration) {
+    //for (int i = 0; i < duration; i++ ) {
       logger.info("#######################################################################");
-      logger.info("#####################SIMULATION STEP = " + i);
+      logger.info("#####################SIMULATION STEP = " + j);
       logger.info("#####################           TIME = " + router.getCurrentSimulationTime());
       logger.info("#######################################################################");
       host.proceedNextEvent();
       router.proceedNextEvent();
+      j++;
+      if (j > duration / 40) break;
     }
-    logger.warn("End of simulation....");   
+    logger.warn("End of simulation in " + router.getCurrentSimulationTime() + " ms.....");   
     for (int i = 0; i < stats.getFlowsStatistics().size(); i++) {
-      int throughout = stats.getFlowsStatistics().get(new Integer(i)).getPacketsCounter();
+      float throughout = stats.getThroughput(i);
       logger.warn("############## " + i + " flow troughput is " + throughout + " ################");
     }
   }
@@ -69,7 +73,7 @@ public class SimpleFifoSimulator implements Simulator {
     Vector<Node> sources = new Vector<Node> (); 
     sources.add(host);
     stats = new Statistics();
-    router = new FifoRouter(sources, Router.DEFAULT_BANDWIDTH, stats, "MainRouter");
+    router = new FifoRouter(sources, Router.DEFAULT_BANDWIDTH, stats, "MainRouter", true);
     router.initialize();
     logger.info("End of the initialization of the FifoSimulator....");   
   }

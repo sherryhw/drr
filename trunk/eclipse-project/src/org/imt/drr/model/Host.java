@@ -29,8 +29,8 @@ public class Host implements Node {
   private static RandomData randomFlowId = new RandomDataImpl();
 
   /** Some constants. */
-  public static final int DEFAULT_PACKET_SIZE_MAX = 4096;  
-  public static final int DEFAULT_NUMBER_OF_FLOWS = 3; //20;
+  public static final int DEFAULT_PACKET_SIZE_MAX = 100000;  
+  public static final int DEFAULT_NUMBER_OF_FLOWS = 20;
   public static final int DEFAULT_ARRIVAL_TIME_MEAN = 100;
   
   /** Mean of the size of the packet. */
@@ -59,7 +59,7 @@ public class Host implements Node {
     } else {
       size = packetSizeMax;
     }
-    int flowId = (int) Math.round(randomFlowId.nextUniform(flowsLower, flowsLower + flowsCount));
+    int flowId = (int) randomFlowId.nextUniform(flowsLower, flowsLower + flowsCount) ;
     int arrivalTime = (int) Math.round(randomArrival.nextExponential(arrivalTimeMean * flowsCount));
     Packet packet = new Packet(flowId, size, arrivalTime);
     //logger.info("Getting next packet from the host " + packet);
