@@ -74,7 +74,7 @@ public class DrrRouter extends Router {
     for (ActiveListElement ale : activeList) {
       cumulativeSize+= ale.getFlowQueue().size();
     }
-    return cumulativeSize >= MAXQUEUESIZE;
+    return cumulativeSize >= MAXQUEUESIZE;//equal should be enough
   }
 
   @Override
@@ -83,6 +83,7 @@ public class DrrRouter extends Router {
 
     int idFlow = evt.getPacket().getIdFlow();
     Vector<Packet> flowQueue = incomingFlows.elementAt(idFlow);
+    
     if(isServing()){
       // *** BEGIN check if the flow is in the active list *** //
       boolean flowIsInActiveList = false;
@@ -155,7 +156,7 @@ public class DrrRouter extends Router {
       scheduleOneRound();
     }
     else{
-      //otherwise make the router idles
+      //otherwise make the router idle
       setServing(false);
     }
 
@@ -197,5 +198,9 @@ public class DrrRouter extends Router {
       }
     }
   }
+  
+  
+  
+  
 
 }

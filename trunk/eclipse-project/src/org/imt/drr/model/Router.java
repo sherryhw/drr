@@ -213,12 +213,13 @@ public abstract class Router implements ActiveNode {
    * Create the departureEvent associated to the packet in the argument
    */
   protected void createDepartureEvent(Packet p){
-    int departureTime = simulationTime+evaluateTransimissionTime(p);
-    p.setDepartureTime(departureTime);
-    int delayInQueue = simulationTime - p.getArrivalTimeInRouter();
-    p.setDelayInQueue(delayInQueue);
-    Event departureEvent=new Event(p, departureTime, EventType.DEPARTURE, Integer.MIN_VALUE);
-    eventList.add(departureEvent);
+    createDepartureEvent(p, simulationTime);
+    //int departureTime = simulationTime+evaluateTransimissionTime(p);
+    //p.setDepartureTime(departureTime);
+    //int delayInQueue = simulationTime - p.getArrivalTimeInRouter();
+    //p.setDelayInQueue(delayInQueue);
+    //Event departureEvent=new Event(p, departureTime, EventType.DEPARTURE, Integer.MIN_VALUE);
+    //eventList.add(departureEvent);
   }
   
   /**
