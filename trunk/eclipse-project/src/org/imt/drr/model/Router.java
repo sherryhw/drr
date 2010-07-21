@@ -10,6 +10,8 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.imt.drr.model.statistics.Statistics;
 
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
+
 import event.Event;
 import event.EventComparator;
 import event.EventType;
@@ -241,12 +243,25 @@ public abstract class Router implements ActiveNode {
   protected int createDepartureEvent(Packet p, int time){
     int departureTime = time + evaluateTransimissionTime(p);
     p.setDepartureTime(departureTime);
+    
+    int newInterarrivalTime = departureTime - getLastActuallyDepartedTime(); 
+    p.upateInterarrivalTime(newInterarrivalTime);
+    
     int delayInQueue = time - p.getArrivalTimeInRouter();
     p.setDelayInQueue(delayInQueue);
     p.addCumulativeDelayInQueue(delayInQueue);
+    
     Event departureEvent=new Event(p, departureTime, EventType.DEPARTURE, Integer.MIN_VALUE);
     eventList.add(departureEvent);
     return departureTime;
+  }
+  
+  protected void saveLastActuallyDepartedTime(){
+    this.lastActuallyDepartedTime = this.getCurrentSimulationTime();
+  }
+  
+  protected int getLastActuallyDepartedTime(){
+    return this.lastActuallyDepartedTime;
   }
   
   /**
@@ -273,6 +288,7 @@ public abstract class Router implements ActiveNode {
           stats.countPacket(evt.getPacket());
           stats.setTime(getCurrentSimulationTime());
         }
+        saveLastActuallyDepartedTime();
         departureEventHandler(evt);
         break;
       case NOPE:

@@ -24,6 +24,10 @@ public class Packet {
   	this.cumulativeDelayInQueue = 0;
   }
   
+  public void upateInterarrivalTime(int newInterarrivalTime){
+    this.interarrivalTime = newInterarrivalTime;
+  }
+  
   /**
    * @return the departureTime
    */
