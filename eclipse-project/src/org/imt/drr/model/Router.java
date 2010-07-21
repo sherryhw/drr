@@ -217,9 +217,9 @@ public abstract class Router implements ActiveNode {
    * Return the departure time 
    */
   protected int createDepartureEvent(Packet p, int time){
-    int departureTime=time+evaluateTransimissionTime(p);
+    int departureTime = time + evaluateTransimissionTime(p);
     p.setDepartureTime(departureTime);
-    int delayInQueue = simulationTime - p.getArrivalTimeInRouter();
+    int delayInQueue = time - p.getArrivalTimeInRouter();
     p.setDelayInQueue(delayInQueue);
     Event departureEvent=new Event(p, departureTime, EventType.DEPARTURE, Integer.MIN_VALUE);
     eventList.add(departureEvent);

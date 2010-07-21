@@ -32,6 +32,8 @@ public class DrrRouter extends Router {
   private int[] deficitCounters;
   private int[] quantumOfServices;
   private final int DEFAULTQUANTUMOFSERVICE = 500;
+  
+  private int lastScheduledDepartureTime;
 
   public DrrRouter(Vector<Node> sources, int bandwidth, int numberOfFlows) {
     super(sources, bandwidth);
@@ -50,6 +52,7 @@ public class DrrRouter extends Router {
     quantumOfServices = new int[numberOfFlows];
     incomingFlows = new Vector<Vector<Packet>>(numberOfFlows);
     activeList = new Vector<ActiveListElement>();
+    lastScheduledDepartureTime=0;
 
     for (int i = 0; i < numberOfFlows; i++) {
       incomingFlows.add(new Vector<Packet>());
@@ -73,7 +76,6 @@ public class DrrRouter extends Router {
 
     int idFlow = evt.getPacket().getIdFlow();
     Vector<Packet> flowQueue = incomingFlows.elementAt(idFlow);
-
 
     if(isServing()){
       // *** BEGIN check if the flow is in the active list *** //
@@ -138,7 +140,7 @@ public class DrrRouter extends Router {
   private void scheduleOneRound() {
     if (!activeList.isEmpty()) {
       int initialActiveListSize = activeList.size();
-      int lastScheduledDepartureTime = this.getCurrentSimulationTime();
+      lastScheduledDepartureTime = Math.max(lastScheduledDepartureTime, getCurrentSimulationTime());
       
       // During a round are scheduled packets from all the flows in activeList
       for (int i = 0; i < initialActiveListSize; i++) {
