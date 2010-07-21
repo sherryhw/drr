@@ -54,7 +54,7 @@ public class Host implements Node {
   @Override
   public Packet getNextPacket() {
     int size;
-    if (type == HostType.CONSTANT_SIZE) {
+    if (type == HostType.RANDOM_SIZE) {
       size = (int) Math.round(randomSize.nextUniform(0, packetSizeMax));
     } else {
       size = packetSizeMax;

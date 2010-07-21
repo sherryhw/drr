@@ -18,6 +18,10 @@ public class FlowStatistics {
   /** packets counter. */
   private int sizeCounter; 
 
+  /** total delay. */
+  private int totalDelay; 
+
+
   /** flow id. */
   private int flowId;
 
@@ -43,6 +47,20 @@ public class FlowStatistics {
     this.flowId = flowId;
   }
   
+  /**
+   * @return the totalDelay
+   */
+  public int getTotalDelay() {
+    return totalDelay;
+  }
+
+  /**
+   * @param totalDelay the totalDelay to set
+   */
+  public void incTotalDelay(int increase) {
+    this.totalDelay += increase;
+  }
+
   /**
    * Increase counter.
    */

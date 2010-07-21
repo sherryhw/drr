@@ -42,7 +42,19 @@ public class Statistics {
         return ((float)flowsStatistics.get(new Integer(flowId)).getSizeCounter()) / time; }
       else return 0;
   }
-  
+
+  /** 
+   * Returns average delay value for flow id. 
+   * 
+   * @param flowId
+   * @return
+   */
+  public float getAverageDelay(int flowId) {
+    if (flowsStatistics.get(new Integer(flowId)) != null) {
+        return ((float)flowsStatistics.get(new Integer(flowId)).getTotalDelay()) / (float)flowsStatistics.get(new Integer(flowId)).getSizeCounter(); }
+      else return 0;
+  }
+
   /**
    * Count the packet. 
    * 
@@ -55,6 +67,7 @@ public class Statistics {
       flowsStatistics.put(packet.getIdFlow(), flow);
     }
     flow.incSize(packet.getSize());
+    flow.incTotalDelay(packet.getCumulativeDelayInQueue());
   }
   
   /**
