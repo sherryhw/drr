@@ -29,9 +29,9 @@ public class Host implements Node {
   private static RandomData randomFlowId = new RandomDataImpl();
 
   /** Some constants. */
-  public static final int DEFAULT_PACKET_SIZE_MAX = 500;  
-  public static final int DEFAULT_NUMBER_OF_FLOWS = 2;//20;
-  public static final int DEFAULT_ARRIVAL_TIME_MEAN = 1;//100;
+  public static final int DEFAULT_PACKET_SIZE_MAX = Constants.DEFAULT_PACKET_SIZE_MAX;  
+  public static final int DEFAULT_NUMBER_OF_FLOWS = Constants.DEFAULT_NUMBER_OF_FLOWS;
+  public static final int DEFAULT_ARRIVAL_TIME_MEAN = Constants.DEFAULT_ARRIVAL_TIME_MEAN;
   
   /** Mean of the size of the packet. */
   private int packetSizeMax; 

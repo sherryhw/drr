@@ -25,9 +25,9 @@ public abstract class Router implements ActiveNode {
   
   protected String name;
   
-  protected final int MAXQUEUESIZE=500;
+  protected static final int MAXQUEUESIZE = Constants.MAXQUEUESIZE;
   
-  public static final int DEFAULT_BANDWIDTH = 50;
+  public static final int DEFAULT_BANDWIDTH = Constants.DEFAULT_BANDWIDTH;
   
   private Vector<Packet> outgoingPackets;
   private TreeSet<Event> eventList;
