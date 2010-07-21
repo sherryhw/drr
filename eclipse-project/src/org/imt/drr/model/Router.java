@@ -21,6 +21,8 @@ import event.EventType;
  */
 public abstract class Router implements ActiveNode {
   
+  private int lastActuallyDepartedTime;
+  
   private boolean serving=false;
   
   protected String name;
@@ -74,7 +76,8 @@ public abstract class Router implements ActiveNode {
    */
   @Override
   public void initialize(){
-    serving=false;
+    serving = false;
+    lastActuallyDepartedTime = 0;
     simulationTime = 0;
     eventList = new TreeSet<Event>(new EventComparator());
     sourceTimeCounters = new Vector<Integer>();
@@ -240,6 +243,7 @@ public abstract class Router implements ActiveNode {
     p.setDepartureTime(departureTime);
     int delayInQueue = time - p.getArrivalTimeInRouter();
     p.setDelayInQueue(delayInQueue);
+    p.addCumulativeDelayInQueue(delayInQueue);
     Event departureEvent=new Event(p, departureTime, EventType.DEPARTURE, Integer.MIN_VALUE);
     eventList.add(departureEvent);
     return departureTime;
