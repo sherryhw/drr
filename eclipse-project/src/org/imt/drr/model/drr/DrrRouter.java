@@ -3,9 +3,7 @@
  */
 package org.imt.drr.model.drr;
 
-import java.nio.BufferOverflowException;
 import java.util.Vector;
-
 import org.apache.log4j.Logger;
 import org.imt.drr.model.Constants;
 import org.imt.drr.model.Node;
@@ -70,6 +68,14 @@ public class DrrRouter extends Router {
     }
     return false;
   }
+  
+  private boolean isIncomingBufferFull(){
+    int cumulativeSize=0;
+    for (ActiveListElement ale : activeList) {
+      cumulativeSize+= ale.getFlowQueue().size();
+    }
+    return cumulativeSize >= MAXQUEUESIZE;
+  }
 
   @Override
   protected void arrivalEventHandler(Event evt) {
@@ -77,7 +83,6 @@ public class DrrRouter extends Router {
 
     int idFlow = evt.getPacket().getIdFlow();
     Vector<Packet> flowQueue = incomingFlows.elementAt(idFlow);
-
     if(isServing()){
       // *** BEGIN check if the flow is in the active list *** //
       boolean flowIsInActiveList = false;
@@ -95,13 +100,12 @@ public class DrrRouter extends Router {
       }
       // *** END check if the flow is in the active list *** //
 
-      /* if no free buffers left FreeBuffer... TODOTODOTODOTODOTODOTODOTODO... */
-      // I enqueue the packet
-      if (flowQueue.size() == MAXQUEUESIZE) {
-        throw new BufferOverflowException();
-      } else {
-        flowQueue.add(evt.getPacket());
+      if(isIncomingBufferFull()){
+        // if no free buffers left, then FreeBuffer
+        freeBuffer();
       }
+      // enqueue the packet
+      flowQueue.add(evt.getPacket());
     } else {
       //The router is idle, so I can directly transmit this packet
       createDepartureEvent(evt.getPacket());
@@ -112,6 +116,32 @@ public class DrrRouter extends Router {
   }
 
   
+  private void freeBuffer() {
+    ActiveListElement longestQueue = getLongestQueue();
+    Vector<Packet> flowQueue = longestQueue.getFlowQueue();
+    flowQueue.remove(flowQueue.size()-1);
+    
+    if (flowQueue.isEmpty()) {
+      activeList.remove(longestQueue);
+      deficitCounters[longestQueue.getFlowId()] = 0;
+    }
+  }
+
+  private ActiveListElement getLongestQueue() {
+    if(activeList.isEmpty()){
+      return null;
+    }
+    ActiveListElement current = null;
+    ActiveListElement longest = activeList.get(0);
+    for (int i=1; i < activeList.size();i++) {
+      current = activeList.get(i);
+      if(current.getFlowQueue().size()>longest.getFlowQueue().size()){
+        longest = current;
+      }
+    }
+    return current;
+  }
+
   @Override
   protected void departureEventHandler(Event evt) {
     logger.debug("!!!!!!!!!!!!!!!DRRRouter BEGIN handling departure event. "+evt);
