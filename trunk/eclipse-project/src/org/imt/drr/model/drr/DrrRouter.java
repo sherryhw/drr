@@ -78,46 +78,6 @@ public class DrrRouter extends Router {
     }
     return cumulativeSize >= MAXQUEUESIZE;//equal should be enough
   }
-
-  @Override
-  protected void arrivalEventHandler(Event evt) {
-    logger.debug("!!!!!!!!!!!!!!!DRRRouter BEGIN handling arrival event. "+evt);
-
-    int idFlow = evt.getPacket().getIdFlow();
-    Vector<Packet> flowQueue = incomingFlows.elementAt(idFlow);
-    
-    if(isServing()){
-      // *** BEGIN check if the flow is in the active list *** //
-      boolean flowIsInActiveList = false;
-      for (ActiveListElement ale : activeList) {
-        if (ale.getFlowId() == idFlow) {
-          flowIsInActiveList = true;
-          break;
-        }
-      }
-      if (!flowIsInActiveList) {    
-        //I add the flow to activeList.
-        ActiveListElement element = new ActiveListElement(flowQueue, idFlow);
-        activeList.add(element);
-        deficitCounters[idFlow] = 0;
-      }
-      // *** END check if the flow is in the active list *** //
-
-      if(isIncomingBufferFull()){
-        // if no free buffers left, then FreeBuffer
-        freeBuffer();
-      }
-      // enqueue the packet
-      flowQueue.add(evt.getPacket());
-    } else {
-      //The router is idle, so I can directly transmit this packet
-      lastScheduledDepartureTime=createDepartureEvent(evt.getPacket());
-      setServing(true);
-    }
-
-    logger.debug("!!!!!!!!!!!!!!!DRRRouter END handling arrival event. "+evt);
-  }
-
   
   private void freeBuffer() {
     ActiveListElement longestQueue = getLongestQueue();
@@ -160,6 +120,47 @@ public class DrrRouter extends Router {
       }
     }
   }
+  
+  
+  @Override
+  protected void arrivalEventHandler(Event evt) {
+    logger.debug("!!!!!!!!!!!!!!!DRRRouter BEGIN handling arrival event. "+evt);
+
+    int idFlow = evt.getPacket().getIdFlow();
+    Vector<Packet> flowQueue = incomingFlows.elementAt(idFlow);
+    
+    //if(isServing()){
+      // *** BEGIN check if the flow is in the active list *** //
+      boolean flowIsInActiveList = false;
+      for (ActiveListElement ale : activeList) {
+        if (ale.getFlowId() == idFlow) {
+          flowIsInActiveList = true;
+          break;
+        }
+      }
+      if (!flowIsInActiveList) {    
+        //I add the flow to activeList.
+        ActiveListElement element = new ActiveListElement(flowQueue, idFlow);
+        activeList.add(element);
+        deficitCounters[idFlow] = 0;
+      }
+      // *** END check if the flow is in the active list *** //
+
+      if(isIncomingBufferFull()){
+        // if no free buffers left, then FreeBuffer
+        freeBuffer();
+      }
+      // enqueue the packet
+      flowQueue.add(evt.getPacket());
+    /*} else {
+      //The router is idle, so I can directly transmit this packet
+      lastScheduledDepartureTime=createDepartureEvent(evt.getPacket());
+      setServing(true);
+    }*/
+
+    logger.debug("!!!!!!!!!!!!!!!DRRRouter END handling arrival event. "+evt);
+  }
+  
   
   @Override
   protected void departureEventHandler(Event evt) {
