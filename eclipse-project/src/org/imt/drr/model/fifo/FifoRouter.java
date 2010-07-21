@@ -20,7 +20,7 @@ import event.Event;
  *
  */
 public class FifoRouter extends Router {
-  private boolean serving=false;
+  
   private Vector<Packet> incomingPackets;
 
   /**
@@ -39,19 +39,7 @@ public class FifoRouter extends Router {
   @Override
   public void initialize() {
     super.initialize();
-    serving=false;
     incomingPackets = new Vector<Packet>(MAXQUEUESIZE);
-  }
-  
-  /**
-   * return true if the router is currently serving (transmitting) a packet
-   */
-  protected boolean isServing() {
-    return serving;
-  }
-
-  protected void setServing(boolean serving) {
-    this.serving = serving;
   }
   
   @Override
@@ -81,11 +69,6 @@ public class FifoRouter extends Router {
     //First put the sent packet in the list of the outgoing packets 
     Packet sentPacket = evt.getPacket();
     addOutgoingPacket(sentPacket);  
-    //Add some statistic gathering here
-    if (stats != null) {
-      stats.countPacket(sentPacket);
-      stats.setTime(getCurrentSimulationTime());
-    }
     //Then create the next departure event if there are any packets in the incomingList
     if(incomingPackets.isEmpty()){
       setServing(false);
