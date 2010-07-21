@@ -27,7 +27,7 @@ public abstract class Router implements ActiveNode {
   
   protected final int MAXQUEUESIZE=500;
   
-  public static final int DEFAULT_BANDWIDTH = 1000;
+  public static final int DEFAULT_BANDWIDTH = 50;
   
   private Vector<Packet> outgoingPackets;
   private TreeSet<Event> eventList;
