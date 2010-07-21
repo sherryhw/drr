@@ -69,7 +69,7 @@ public class DrrRouter extends Router {
 
   @Override
   protected void arrivalEventHandler(Event evt) {
-    logger.info("!!!!!!!!!!!!!!!DRRRouter BEGIN handling arrival event. "+evt);
+    logger.debug("!!!!!!!!!!!!!!!DRRRouter BEGIN handling arrival event. "+evt);
 
     int idFlow = evt.getPacket().getIdFlow();
     Vector<Packet> flowQueue = incomingFlows.elementAt(idFlow);
@@ -105,13 +105,13 @@ public class DrrRouter extends Router {
       setServing(true);
     }
 
-    logger.info("!!!!!!!!!!!!!!!DRRRouter END handling arrival event. "+evt);
+    logger.debug("!!!!!!!!!!!!!!!DRRRouter END handling arrival event. "+evt);
   }
 
   
   @Override
   protected void departureEventHandler(Event evt) {
-    logger.info("!!!!!!!!!!!!!!!DRRRouter BEGIN handling departure event. "+evt);
+    logger.debug("!!!!!!!!!!!!!!!DRRRouter BEGIN handling departure event. "+evt);
     
     // First put the sent packet in the list of the outgoing packets
     Packet sentPacket = evt.getPacket();
@@ -126,7 +126,7 @@ public class DrrRouter extends Router {
       setServing(false);
     }
 
-    logger.info("!!!!!!!!!!!!!!!DRRRouter END handling departure event. "+evt);
+    logger.debug("!!!!!!!!!!!!!!!DRRRouter END handling departure event. "+evt);
   }
 
   

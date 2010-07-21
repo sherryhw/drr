@@ -6,9 +6,11 @@ package org.imt.drr.simulators;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.imt.drr.model.Host;
 import org.imt.drr.model.Node;
 import org.imt.drr.model.Router;
 import org.imt.drr.model.Simulator;
+import org.imt.drr.model.drr.DrrRouter;
 import org.imt.drr.model.fifo.CombinedHost;
 import org.imt.drr.model.fifo.FifoRouter;
 import org.imt.drr.model.statistics.Statistics;
@@ -18,10 +20,10 @@ import org.imt.drr.model.statistics.Statistics;
  *         PhD students at IMTLucca http://imtlucca.it
  *
  */
-public class SimpleFifoSimulator implements Simulator {
+public class OneRouterSimulator implements Simulator {
 
   /** Logger */
-  static Logger logger = Logger.getLogger(SimpleFifoSimulator.class);
+  static Logger logger = Logger.getLogger(OneRouterSimulator.class);
 
   /** An instance of fifo router. */
   private Router router;
@@ -67,25 +69,33 @@ public class SimpleFifoSimulator implements Simulator {
    */
   @Override
   public void initialize() {
-    logger.info("Initialization of the FifoSimulator....");   
-    host = new CombinedHost();
-    host.initialize();
-    Vector<Node> sources = new Vector<Node> (); 
-    sources.add(host);
-    stats = new Statistics();
-    router = new FifoRouter(sources, Router.DEFAULT_BANDWIDTH, stats, "MainRouter", true);
-    router.initialize();
-    logger.info("End of the initialization of the FifoSimulator....");   
+    initialize(2000000, RouterType.FIFO);
   }
 
   /**
    * Initialization. 
    * 
    * @param duration - of the simulation
+   * @param type - type of router
    */
-  public void initialize(int duration) {
+  public void initialize(int duration, RouterType type) {
+    logger.info("Initialization of the OneRouterSimulator....");   
     this.duration = duration;
-    initialize();
+    host = new CombinedHost();
+    host.initialize();
+    Vector<Node> sources = new Vector<Node> (); 
+    sources.add(host);
+    stats = new Statistics();
+    switch (type) {
+      case FIFO: 
+        router = new FifoRouter(sources, Router.DEFAULT_BANDWIDTH, stats, "FifoRouter", true);
+        break;
+      case DRR:
+        router = new DrrRouter(sources, Router.DEFAULT_BANDWIDTH, Host.DEFAULT_NUMBER_OF_FLOWS, stats, "DrrRouter", false);
+        break;
+    }
+    router.initialize();
+    logger.info("End of the initialization of the OneRouterSimulator....");   
   }
   
 }
