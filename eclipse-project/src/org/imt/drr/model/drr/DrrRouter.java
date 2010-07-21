@@ -38,8 +38,8 @@ public class DrrRouter extends Router {
     this.numberOfFlows = numberOfFlows;
   }
 
-  public DrrRouter(Vector<Node> sources, int bandwidth, int numberOfFlows, Statistics stats, String name) {
-    super(sources, bandwidth, stats, name);
+  public DrrRouter(Vector<Node> sources, int bandwidth, int numberOfFlows, Statistics stats, String name, boolean cleanOutgoing) {
+    super(sources, bandwidth, stats, name, cleanOutgoing);
     this.numberOfFlows = numberOfFlows;
   }
 

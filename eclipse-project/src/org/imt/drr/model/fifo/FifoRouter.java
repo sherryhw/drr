@@ -29,11 +29,11 @@ public class FifoRouter extends Router {
   static Logger logger = Logger.getLogger(Router.class);
 
   public FifoRouter(Vector<Node> sources, int bandwidth){
-    this(sources, bandwidth, null, "FifoRouter");
+    this(sources, bandwidth, null, "FifoRouter", false);
   }
 
-  public FifoRouter(Vector<Node> sources, int bandwidth, Statistics stats, String name){
-    super(sources, bandwidth, stats, name);
+  public FifoRouter(Vector<Node> sources, int bandwidth, Statistics stats, String name, boolean cleanOutgoing){
+    super(sources, bandwidth, stats, name, cleanOutgoing);
   }
   
   @Override
@@ -59,7 +59,7 @@ public class FifoRouter extends Router {
     logger.debug("!!!!!!!!!!!!!!!start handling arrival event. incomingPackets.size="+incomingPackets.size()+ ". isServing= "+isServing()+". " + evt);
     if(isServing()){
       //The router is busy, so I have to enqueue the packet, if there is still space in the queue.
-      if(incomingPackets.size()==MAXQUEUESIZE){
+      if(incomingPackets.size() == MAXQUEUESIZE){
         throw new BufferOverflowException();
       }
       else{
