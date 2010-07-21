@@ -174,7 +174,16 @@ public abstract class Router implements ActiveNode {
    * Create the arrivalEvent associated to the packet in the argument
    */
   private void createArrivalEvent(Packet p){
-    int arrivalTime = simulationTime + p.getInterarrivalTime();
+    /** BEGIN EVALUATION ARRIVAL TIME **/
+    int arrivalTime;
+    if(p.getDepartureTime()==Integer.MIN_VALUE){
+      //the packet came out from 
+      arrivalTime = simulationTime + p.getInterarrivalTime();
+    } else {
+      arrivalTime = p.getDepartureTime();
+    }
+    /** END EVALUATIO ARRIVAL TIME **/
+    
     p.setArrivalTimeInRouter(arrivalTime);
     Event evt = new Event(p, arrivalTime , EventType.ARRIVAL, Integer.MIN_VALUE);
     eventList.add(evt);

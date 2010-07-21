@@ -20,6 +20,7 @@ public class Packet {
   	this.size = size;
   	this.interarrivalTime = interarrivalTime;
   	this.id = idCounter++;
+  	this.departureTime = Integer.MIN_VALUE;
   }
   
   /**
