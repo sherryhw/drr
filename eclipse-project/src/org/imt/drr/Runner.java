@@ -37,7 +37,7 @@ public class Runner {
 //    simulator.initialize(10000, RouterType.DRR);
 //    simulator.execute();
     OneRouterSimulator simulator = new OneRouterSimulator();
-    simulator.initialize(100, RouterType.DRR);
+    simulator.initialize(1000, RouterType.FIFO);
     simulator.execute();
 
 //    //Four fifos
