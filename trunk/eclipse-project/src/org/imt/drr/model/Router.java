@@ -175,13 +175,13 @@ public abstract class Router implements ActiveNode {
    * Create the arrivalEvent associated to the packet in the argument
    */
   private void createArrivalEvent(Packet p){
-    int arrivalTime=evaluateArrivalTime(p);
+    int arrivalTime=oldEvaluateArrivalTime(p);
     p.setArrivalTimeInRouter(arrivalTime);
     Event evt = new Event(p, arrivalTime , EventType.ARRIVAL, Integer.MIN_VALUE);
     eventList.add(evt);
   }
   
-  private int evaluateArrivalTime(Packet p){
+  /*private int evaluateArrivalTime(Packet p){
     int arrivalTime;
     if(p.getDepartureTime()==Integer.MIN_VALUE){
       //the packet came out from 
@@ -189,6 +189,11 @@ public abstract class Router implements ActiveNode {
     } else {
       arrivalTime = p.getDepartureTime();
     }
+    return arrivalTime;
+  }*/
+  
+  private int oldEvaluateArrivalTime(Packet p){
+    int arrivalTime = simulationTime + p.getInterarrivalTime();
     return arrivalTime;
   }
   
