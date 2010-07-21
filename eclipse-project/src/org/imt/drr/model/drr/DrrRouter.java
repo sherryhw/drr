@@ -108,16 +108,21 @@ public class DrrRouter extends Router {
   @Override
   public void proceedNextEvent() {
     super.proceedNextEvent();
-    
-    if(existsIncomingPackets()){
-      //Generate the departure events of this round
-      scheduleOneRound();
-    }
-    else{
+
+    if(!nopeEvent){//this way I don't schedule after a nope event
+      if(existsIncomingPackets()){
+        //Generate the departure events of this round
+        scheduleOneRound();
+      }
+      /*SERVING
+       * else{
       //If there are no incoming packets, and I am not actually sending a packet, then the router is idle
       if(lastScheduledDepartureTime<=getCurrentSimulationTime()){
         setServing(false);
       }
+    }*/
+    } else {
+      nopeEvent=false;
     }
   }
   
@@ -129,7 +134,7 @@ public class DrrRouter extends Router {
     int idFlow = evt.getPacket().getIdFlow();
     Vector<Packet> flowQueue = incomingFlows.elementAt(idFlow);
     
-    //if(isServing()){
+    //SERVINGif(isServing()){
       // *** BEGIN check if the flow is in the active list *** //
       boolean flowIsInActiveList = false;
       for (ActiveListElement ale : activeList) {
@@ -152,7 +157,8 @@ public class DrrRouter extends Router {
       }
       // enqueue the packet
       flowQueue.add(evt.getPacket());
-    /*} else {
+    /*SERVING
+     * } else {
       //The router is idle, so I can directly transmit this packet
       lastScheduledDepartureTime=createDepartureEvent(evt.getPacket());
       setServing(true);

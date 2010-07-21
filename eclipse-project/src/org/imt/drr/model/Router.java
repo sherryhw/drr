@@ -22,6 +22,7 @@ import event.EventType;
  *
  */
 public abstract class Router implements ActiveNode {
+  protected boolean nopeEvent = false;
   
   private int lastActuallyDepartedTime;
   
@@ -78,6 +79,7 @@ public abstract class Router implements ActiveNode {
    */
   @Override
   public void initialize(){
+    nopeEvent = false;
     serving = false;
     lastActuallyDepartedTime = 0;
     simulationTime = 0;
@@ -326,6 +328,7 @@ public abstract class Router implements ActiveNode {
    * @param evt
    */
   protected void nopeEventHandler(Event evt){
+    nopeEvent = true;
     askNewPackets(evt.getSourceId());
   }
  
