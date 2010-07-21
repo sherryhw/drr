@@ -11,6 +11,8 @@ import org.imt.drr.model.Packet;
 import org.imt.drr.model.Router;
 import org.imt.drr.model.statistics.Statistics;
 
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
+
 import event.Event;
 
 /**
@@ -109,7 +111,7 @@ public class DrrRouter extends Router {
       flowQueue.add(evt.getPacket());
     } else {
       //The router is idle, so I can directly transmit this packet
-      createDepartureEvent(evt.getPacket());
+      lastScheduledDepartureTime=createDepartureEvent(evt.getPacket());
       setServing(true);
     }
 
@@ -144,6 +146,22 @@ public class DrrRouter extends Router {
   }
 
   @Override
+  public void proceedNextEvent() {
+    super.proceedNextEvent();
+    
+    if(existsIncomingPackets()){
+      //Generate the departure events of this round
+      scheduleOneRound();
+    }
+    else{
+      //If there are no incoming packets, and I am not actually sending a packet, then the router is idle
+      if(lastScheduledDepartureTime<=getCurrentSimulationTime()){
+        setServing(false);
+      }
+    }
+  }
+  
+  @Override
   protected void departureEventHandler(Event evt) {
     logger.debug("!!!!!!!!!!!!!!!DRRRouter BEGIN handling departure event. "+evt);
     
@@ -151,14 +169,15 @@ public class DrrRouter extends Router {
     Packet sentPacket = evt.getPacket();
     addOutgoingPacket(sentPacket);
     
-    if(existsIncomingPackets()){
+    /* I moved these lines in the implementation of proceednextevent of this class
+     if(existsIncomingPackets()){
       //Then create the departure events relative to a round
       scheduleOneRound();
     }
     else{
       //otherwise make the router idle
       setServing(false);
-    }
+    }*/
 
     logger.debug("!!!!!!!!!!!!!!!DRRRouter END handling departure event. "+evt);
   }
@@ -199,8 +218,4 @@ public class DrrRouter extends Router {
     }
   }
   
-  
-  
-  
-
 }

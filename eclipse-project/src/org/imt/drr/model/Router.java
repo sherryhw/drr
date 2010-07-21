@@ -164,7 +164,8 @@ public abstract class Router implements ActiveNode {
     logger.debug("+++++node " + node + " returned packet " + p);
     if (p != null){
       createArrivalEvent(p);
-      sourceTimeCounters.set(sourceId, simulationTime + p.getInterarrivalTime());
+      //sourceTimeCounters.set(sourceId, simulationTime + p.getInterarrivalTime());
+      sourceTimeCounters.set(sourceId, p.getArrivalTimeInRouter());
     } else { 
       createNopeEvent(sourceId);
     }
@@ -174,7 +175,13 @@ public abstract class Router implements ActiveNode {
    * Create the arrivalEvent associated to the packet in the argument
    */
   private void createArrivalEvent(Packet p){
-    /** BEGIN EVALUATION ARRIVAL TIME **/
+    int arrivalTime=evaluateArrivalTime(p);
+    p.setArrivalTimeInRouter(arrivalTime);
+    Event evt = new Event(p, arrivalTime , EventType.ARRIVAL, Integer.MIN_VALUE);
+    eventList.add(evt);
+  }
+  
+  private int evaluateArrivalTime(Packet p){
     int arrivalTime;
     if(p.getDepartureTime()==Integer.MIN_VALUE){
       //the packet came out from 
@@ -182,11 +189,7 @@ public abstract class Router implements ActiveNode {
     } else {
       arrivalTime = p.getDepartureTime();
     }
-    /** END EVALUATIO ARRIVAL TIME **/
-    
-    p.setArrivalTimeInRouter(arrivalTime);
-    Event evt = new Event(p, arrivalTime , EventType.ARRIVAL, Integer.MIN_VALUE);
-    eventList.add(evt);
+    return arrivalTime;
   }
   
   /**
@@ -212,14 +215,15 @@ public abstract class Router implements ActiveNode {
   /**
    * Create the departureEvent associated to the packet in the argument
    */
-  protected void createDepartureEvent(Packet p){
-    createDepartureEvent(p, simulationTime);
-    //int departureTime = simulationTime+evaluateTransimissionTime(p);
-    //p.setDepartureTime(departureTime);
-    //int delayInQueue = simulationTime - p.getArrivalTimeInRouter();
-    //p.setDelayInQueue(delayInQueue);
-    //Event departureEvent=new Event(p, departureTime, EventType.DEPARTURE, Integer.MIN_VALUE);
-    //eventList.add(departureEvent);
+  protected int createDepartureEvent(Packet p){
+    return createDepartureEvent(p, simulationTime);
+    /*int departureTime = simulationTime+evaluateTransimissionTime(p);
+    p.setDepartureTime(departureTime);
+    int delayInQueue = simulationTime - p.getArrivalTimeInRouter();
+    p.setDelayInQueue(delayInQueue);
+    Event departureEvent=new Event(p, departureTime, EventType.DEPARTURE, Integer.MIN_VALUE);
+    eventList.add(departureEvent);
+    return departureTime;*/
   }
   
   /**
