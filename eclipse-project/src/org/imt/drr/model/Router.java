@@ -89,13 +89,15 @@ public abstract class Router implements ActiveNode {
       eventList.add(nopeEvent);
       sourceTimeCounters.add(new Integer(Integer.MIN_VALUE));
     }
-    String log = "\n";
-    //Some logging here 
-    for (Event event : eventList) {
-      log += "event#" + event.getId() + " = " + event + "\n";
-      
+    if (Constants.USE_LOG) {
+      String log = "\n";
+      //Some logging here 
+      for (Event event : eventList) {
+        log += "event#" + event.getId() + " = " + event + "\n";
+        
+      }
+      logger.info("\n" + name + "\n" + log);
     }
-    logger.info("\n" + name + "\n" + log);
   }
   
   
@@ -132,9 +134,9 @@ public abstract class Router implements ActiveNode {
    * Add a sent packet to the list of the outgoing packets
    */
   protected void addOutgoingPacket(Packet p){
-    //if (!(isCleanOutgoing() && outgoingPackets.size() > 10)) { 
+    if (!(isCleanOutgoing() && outgoingPackets.size() > 10)) { 
       outgoingPackets.add(p);
-    //}
+    }
   }
   
   /**
@@ -273,7 +275,7 @@ public abstract class Router implements ActiveNode {
         break;
       case DEPARTURE:
         //Add some statistic gathering here
-        if (stats != null) {
+        if (stats != null && (getCurrentSimulationTime() > Constants.SETUP_TIME)) {
           stats.countPacket(evt.getPacket());
           stats.setTime(getCurrentSimulationTime());
         }
@@ -285,18 +287,20 @@ public abstract class Router implements ActiveNode {
         break;
       }
     }
-    //Some logging here 
-    String log = "";
-    for (int i = 0; i < outgoingPackets.size(); i++) {
-      log += "pack#" + i + " = " + outgoingPackets.get(i) + "\n";
+    if (Constants.USE_LOG) {
+      //Some logging here 
+      String log = "";
+      for (int i = 0; i < outgoingPackets.size(); i++) {
+        log += "pack#" + i + " = " + outgoingPackets.get(i) + "\n";
+      }
+      log += "\n";
+      //Some logging here 
+      for (Event event : eventList) {
+        log += "event#" + event.getId() + " = " + event + "\n";
+        
+      }
+      logger.info("\n__________" + name + "__________\n\n" + log);
     }
-    log += "\n";
-    //Some logging here 
-    for (Event event : eventList) {
-      log += "event#" + event.getId() + " = " + event + "\n";
-      
-    }
-    logger.info("\n__________" + name + "__________\n\n" + log);
   }
   
   private void manageInterdepartedTime(Packet p){

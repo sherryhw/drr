@@ -3,9 +3,11 @@
  */
 package org.imt.drr.simulators;
 
+import java.util.Date;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.imt.drr.model.Constants;
 import org.imt.drr.model.Host;
 import org.imt.drr.model.HostType;
 import org.imt.drr.model.Node;
@@ -29,15 +31,15 @@ public class FourRoutersSimulator implements Simulator {
   /** Array of routers. */
   private Vector<Router> routers;
   
-  /** Final router. */
-  private Router finalRouter;
-
   /** Array of hosts. */
   private Vector<CombinedHost> hosts;
   
   /** Statistics */
   private Statistics stats;
-  
+
+  /** Router */
+  private Router finalRouter;
+
   /**
    * Duration of the simulation in ticks. 
    */
@@ -51,22 +53,29 @@ public class FourRoutersSimulator implements Simulator {
     logger.warn("Execute simulation....");   
     int j = 0;
     while (finalRouter.getCurrentSimulationTime() < duration) {
-      logger.info("#######################################################################");
-      logger.info("#####################SIMULATION STEP = " + j);
-      logger.info("#####################           TIME = " + finalRouter.getCurrentSimulationTime());
-      logger.info("#######################################################################");
+      if (Constants.USE_LOG) {
+        logger.info("#######################################################################");
+        logger.info("#####################SIMULATION STEP = " + j);
+        logger.info("#####################           TIME = " + finalRouter.getCurrentSimulationTime());
+        logger.info("#######################################################################");
+      }
       for (int i = 0; i < routers.size(); i++) {
         hosts.get(i).proceedNextEvent();
         routers.get(i).proceedNextEvent();
       }
       j++;
-      if (j > duration / 40) break;
+      if (j == Integer.MAX_VALUE - 1) break;
     }
     logger.warn("End of simulation in " + finalRouter.getCurrentSimulationTime() + " ms.....");   
-//    for (int i = 0; i < stats.getFlowsStatistics().size(); i++) {
-//      float throughout = stats.getThroughput(i);
-//      logger.warn("############## " + i + " flow troughput is " + throughout + " ################");
-//    }
+    logger.warn((new Date()));
+    for (Integer key : stats.getFlowsStatistics().keySet()) {
+      float throughout = stats.getThroughput(key);
+      int numberOfPackets = stats.getFlowsStatistics().get(key).getPacketsCounter();
+      float averageDelay = stats.getAverageDelay(key) < 0.001 ? 0 : stats.getAverageDelay(key);
+      logger.warn("####### " + key + " flow troughput = " + throughout 
+          + " averageDelay = " + averageDelay  
+          + " numberOfPackets = " + numberOfPackets + " #######");
+    }
   }
 
   /* (non-Javadoc)
@@ -92,6 +101,7 @@ public class FourRoutersSimulator implements Simulator {
     CombinedHost host;
     Router router = null;
     Vector<Node> sources; 
+    stats = null;
     for (int i = 0; i < countRouters; i++) {
       host = new CombinedHost();
       host.initialize(Host.DEFAULT_PACKET_SIZE_MAX, Host.DEFAULT_ARRIVAL_TIME_MEAN, 
@@ -102,13 +112,16 @@ public class FourRoutersSimulator implements Simulator {
       if (router != null) {
         sources.add(router);
       }
+      if (i == countRouters - 1) {
+        stats = new Statistics();
+      }
       switch (type) {
-      case FIFO: 
-        router = new FifoRouter(sources, Router.DEFAULT_BANDWIDTH, null, "FifoRouter", true);
-        break;
-      case DRR:
-        router = new DrrRouter(sources, Router.DEFAULT_BANDWIDTH, Host.DEFAULT_NUMBER_OF_FLOWS * countRouters, null, "DrrRouter", false);
-        break;
+        case FIFO: 
+          router = new FifoRouter(sources, Router.DEFAULT_BANDWIDTH, stats, "FifoRouter#" + i, false);
+          break;
+        case DRR:
+          router = new DrrRouter(sources, Router.DEFAULT_BANDWIDTH, Host.DEFAULT_NUMBER_OF_FLOWS * countRouters, stats, "DrrRouter#" + i, false);
+          break;
       }
       if (i == countRouters - 1) {
         finalRouter = router;
