@@ -55,7 +55,7 @@ public class OneRouterSimulator implements Simulator {
       host.proceedNextEvent();
       router.proceedNextEvent();
       j++;
-      if (j > duration / 40) break;
+      if (j == Integer.MAX_VALUE - 1) break;
     }
     logger.warn("End of simulation in " + router.getCurrentSimulationTime() + " ms.....");   
     for (int i = 0; i < stats.getFlowsStatistics().size(); i++) {

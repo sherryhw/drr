@@ -7,6 +7,7 @@ import java.nio.BufferOverflowException;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.imt.drr.model.Constants;
 import org.imt.drr.model.Node;
 import org.imt.drr.model.Packet;
 import org.imt.drr.model.Router;
@@ -31,7 +32,7 @@ public class DrrRouter extends Router {
   private Vector<ActiveListElement> activeList;
   private int[] deficitCounters;
   private int[] quantumOfServices;
-  private final int DEFAULTQUANTUMOFSERVICE = 500;
+  private final int DEFAULTQUANTUMOFSERVICE = Constants.DEFAULTQUANTUMOFSERVICE;
   
   private int lastScheduledDepartureTime;
 

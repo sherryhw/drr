@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.imt.drr.model.Host;
+import org.imt.drr.model.HostType;
 import org.imt.drr.model.Node;
 import org.imt.drr.model.Router;
 import org.imt.drr.model.Simulator;
@@ -50,21 +51,22 @@ public class FourRoutersSimulator implements Simulator {
     logger.warn("Execute simulation....");   
     int j = 0;
     while (finalRouter.getCurrentSimulationTime() < duration) {
-    //for (int i = 0; i < duration; i++ ) {
       logger.info("#######################################################################");
       logger.info("#####################SIMULATION STEP = " + j);
       logger.info("#####################           TIME = " + finalRouter.getCurrentSimulationTime());
       logger.info("#######################################################################");
-      //host.proceedNextEvent();
-      //router.proceedNextEvent();
+      for (int i = 0; i < routers.size(); i++) {
+        hosts.get(i).proceedNextEvent();
+        routers.get(i).proceedNextEvent();
+      }
       j++;
       if (j > duration / 40) break;
     }
     logger.warn("End of simulation in " + finalRouter.getCurrentSimulationTime() + " ms.....");   
-    for (int i = 0; i < stats.getFlowsStatistics().size(); i++) {
-      float throughout = stats.getThroughput(i);
-      logger.warn("############## " + i + " flow troughput is " + throughout + " ################");
-    }
+//    for (int i = 0; i < stats.getFlowsStatistics().size(); i++) {
+//      float throughout = stats.getThroughput(i);
+//      logger.warn("############## " + i + " flow troughput is " + throughout + " ################");
+//    }
   }
 
   /* (non-Javadoc)
@@ -92,6 +94,8 @@ public class FourRoutersSimulator implements Simulator {
     Vector<Node> sources; 
     for (int i = 0; i < countRouters; i++) {
       host = new CombinedHost();
+      host.initialize(Host.DEFAULT_PACKET_SIZE_MAX, Host.DEFAULT_ARRIVAL_TIME_MEAN, 
+          i * Host.DEFAULT_NUMBER_OF_FLOWS, Host.DEFAULT_NUMBER_OF_FLOWS, HostType.RANDOM_SIZE, false);
       hosts.add(host);
       sources = new Vector<Node> (); 
       sources.add(host);
