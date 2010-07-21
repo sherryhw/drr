@@ -5,7 +5,6 @@ package org.imt.drr;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.imt.drr.simulators.FourRoutersSimulator;
 import org.imt.drr.simulators.OneRouterSimulator;
 import org.imt.drr.simulators.RouterType;
 
