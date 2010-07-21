@@ -58,9 +58,10 @@ public class OneRouterSimulator implements Simulator {
       if (j == Integer.MAX_VALUE - 1) break;
     }
     logger.warn("End of simulation in " + router.getCurrentSimulationTime() + " ms.....");   
-    for (int i = 0; i < stats.getFlowsStatistics().size(); i++) {
-      float throughout = stats.getThroughput(i);
-      logger.warn("############## " + i + " flow troughput is " + throughout + " ################");
+    for (Integer key : stats.getFlowsStatistics().keySet()) {
+      float throughout = stats.getThroughput(key);
+      int numberOfPackets = stats.getFlowsStatistics().get(key).getPacketsCounter();
+      logger.warn("####### " + key + " flow troughput = " + throughout + " numberOfPackets = " + numberOfPackets + " #######");
     }
   }
 

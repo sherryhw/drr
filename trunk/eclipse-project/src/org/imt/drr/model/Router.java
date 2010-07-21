@@ -127,9 +127,9 @@ public abstract class Router implements ActiveNode {
    * Add a sent packet to the list of the outgoing packets
    */
   protected void addOutgoingPacket(Packet p){
-    if (!(isCleanOutgoing() && outgoingPackets.size() > 10)) { 
+    //if (!(isCleanOutgoing() && outgoingPackets.size() > 10)) { 
       outgoingPackets.add(p);
-    }
+    //}
   }
   
   /**
@@ -254,7 +254,7 @@ public abstract class Router implements ActiveNode {
         arrivalEventHandler(evt);
         break;
       case DEPARTURE:
-      //Add some statistic gathering here
+        //Add some statistic gathering here
         if (stats != null) {
           stats.countPacket(evt.getPacket());
           stats.setTime(getCurrentSimulationTime());

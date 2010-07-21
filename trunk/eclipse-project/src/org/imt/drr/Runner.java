@@ -33,8 +33,11 @@ public class Runner {
     PropertyConfigurator.configure("log/log4j.properties");
     
     //We just start with creating simple Fifo Simulator
+//    OneRouterSimulator simulator = new OneRouterSimulator();
+//    simulator.initialize(10000, RouterType.DRR);
+//    simulator.execute();
     OneRouterSimulator simulator = new OneRouterSimulator();
-    simulator.initialize(1000, RouterType.DRR);
+    simulator.initialize(10000, RouterType.FIFO);
     simulator.execute();
 
 //    //Four fifos
