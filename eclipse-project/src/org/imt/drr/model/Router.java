@@ -204,8 +204,10 @@ public abstract class Router implements ActiveNode {
    * Create the departureEvent associated to the packet in the argument
    */
   protected void createDepartureEvent(Packet p){
-    int departureTime=simulationTime+evaluateTransimissionTime(p);
+    int departureTime = simulationTime+evaluateTransimissionTime(p);
     p.setDepartureTime(departureTime);
+    int delayInQueue = simulationTime - p.getArrivalTimeInRouter();
+    p.setDelayInQueue(delayInQueue);
     Event departureEvent=new Event(p, departureTime, EventType.DEPARTURE, Integer.MIN_VALUE);
     eventList.add(departureEvent);
   }
@@ -216,7 +218,9 @@ public abstract class Router implements ActiveNode {
    */
   protected int createDepartureEvent(Packet p, int time){
     int departureTime=time+evaluateTransimissionTime(p);
-    p.setDepartureTime(departureTime);//TODO: controlla,probabilmente non va bene
+    p.setDepartureTime(departureTime);
+    int delayInQueue = simulationTime - p.getArrivalTimeInRouter();
+    p.setDelayInQueue(delayInQueue);
     Event departureEvent=new Event(p, departureTime, EventType.DEPARTURE, Integer.MIN_VALUE);
     eventList.add(departureEvent);
     return departureTime;
