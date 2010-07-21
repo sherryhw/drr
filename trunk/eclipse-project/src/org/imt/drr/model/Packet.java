@@ -7,7 +7,7 @@ package org.imt.drr.model;
  */
 public class Packet {
 
-  private int idFlow, size, interarrivalTime, arrivalTimeInRouter, delayInQueue;
+  private int idFlow, size, interarrivalTime, arrivalTimeInRouter, delayInQueue, cumulativeDelayInQueue;
   private int departureTime;
 
   private final int id;
@@ -21,6 +21,7 @@ public class Packet {
   	this.interarrivalTime = interarrivalTime;
   	this.id = idCounter++;
   	this.departureTime = Integer.MIN_VALUE;
+  	this.cumulativeDelayInQueue = 0;
   }
   
   /**
@@ -38,17 +39,31 @@ public class Packet {
   }
   
   /**
-   * @return the departureTime
+   * get the delay spent in the last router
    */
   public int getDelayInQueue() {
     return delayInQueue;
   }
 
   /**
-   * @param departureTime the departureTime to set
+   * set delay spent in the last router
    */
   public void setDelayInQueue(int delay) {
     this.delayInQueue = delay;
+  }
+  
+  /**
+   * get the delay spent in the last router
+   */
+  public int getCumulativeDelayInQueue() {
+    return cumulativeDelayInQueue;
+  }
+
+  /**
+   * add delay to the cumulative delay spent in the last router
+   */
+  public void addCumulativeDelayInQueue(int delay) {
+    this.cumulativeDelayInQueue += delay;
   }
   
   public int getId(){
