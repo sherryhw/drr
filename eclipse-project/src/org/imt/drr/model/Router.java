@@ -180,7 +180,7 @@ public abstract class Router implements ActiveNode {
    * Create the arrivalEvent associated to the packet in the argument
    */
   private void createArrivalEvent(Packet p){
-    int arrivalTime=oldEvaluateArrivalTime(p);
+    int arrivalTime = evaluateArrivalTime(p);
     p.setArrivalTimeInRouter(arrivalTime);
     Event evt = new Event(p, arrivalTime , EventType.ARRIVAL, Integer.MIN_VALUE);
     eventList.add(evt);
@@ -197,7 +197,7 @@ public abstract class Router implements ActiveNode {
     return arrivalTime;
   }*/
   
-  private int oldEvaluateArrivalTime(Packet p){
+  private int evaluateArrivalTime(Packet p){
     int arrivalTime = simulationTime + p.getInterarrivalTime();
     return arrivalTime;
   }
@@ -244,9 +244,6 @@ public abstract class Router implements ActiveNode {
     int departureTime = time + evaluateTransimissionTime(p);
     p.setDepartureTime(departureTime);
     
-    int newInterarrivalTime = departureTime - getLastActuallyDepartedTime(); 
-    p.upateInterarrivalTime(newInterarrivalTime);
-    
     int delayInQueue = time - p.getArrivalTimeInRouter();
     p.setDelayInQueue(delayInQueue);
     p.addCumulativeDelayInQueue(delayInQueue);
@@ -254,14 +251,6 @@ public abstract class Router implements ActiveNode {
     Event departureEvent=new Event(p, departureTime, EventType.DEPARTURE, Integer.MIN_VALUE);
     eventList.add(departureEvent);
     return departureTime;
-  }
-  
-  protected void saveLastActuallyDepartedTime(){
-    this.lastActuallyDepartedTime = this.getCurrentSimulationTime();
-  }
-  
-  protected int getLastActuallyDepartedTime(){
-    return this.lastActuallyDepartedTime;
   }
   
   /**
@@ -288,7 +277,7 @@ public abstract class Router implements ActiveNode {
           stats.countPacket(evt.getPacket());
           stats.setTime(getCurrentSimulationTime());
         }
-        saveLastActuallyDepartedTime();
+        manageInterdepartedTime(evt.getPacket());
         departureEventHandler(evt);
         break;
       case NOPE:
@@ -308,6 +297,12 @@ public abstract class Router implements ActiveNode {
       
     }
     logger.info("\n__________" + name + "__________\n\n" + log);
+  }
+  
+  private void manageInterdepartedTime(Packet p){
+    int interDepartureTime = getCurrentSimulationTime() - lastActuallyDepartedTime; 
+    p.upateInterarrivalTime(interDepartureTime);
+    lastActuallyDepartedTime = getCurrentSimulationTime();
   }
   
   /**
