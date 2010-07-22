@@ -44,9 +44,9 @@ public class Statistics {
    * @param flowId
    * @return
    */
-  public float getThroughput(int flowId) {
+  public double getThroughput(int flowId) {
     if (flowsStatistics.get(new Integer(flowId)) != null) {
-        return ((float)flowsStatistics.get(new Integer(flowId)).getSizeCounter()) / time; }
+        return ((double)flowsStatistics.get(new Integer(flowId)).getSizeCounter()) / time; }
       else return 0;
   }
 
@@ -56,9 +56,9 @@ public class Statistics {
    * @param flowId
    * @return
    */
-  public float getAverageDelay(int flowId) {
+  public double getAverageDelay(int flowId) {
     if (flowsStatistics.get(new Integer(flowId)) != null) {
-        return ((float)flowsStatistics.get(new Integer(flowId)).getTotalDelay()) / (float)flowsStatistics.get(new Integer(flowId)).getPacketsCounter(); }
+        return ((double)flowsStatistics.get(new Integer(flowId)).getTotalDelay()) / (double)flowsStatistics.get(new Integer(flowId)).getPacketsCounter(); }
       else return 0;
   }
 
