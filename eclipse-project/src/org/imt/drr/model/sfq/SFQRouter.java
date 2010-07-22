@@ -143,7 +143,7 @@ public class SFQRouter extends Router {
     Packet sentPacket = evt.getPacket();
     addOutgoingPacket(sentPacket);
     
-    scheduleOneRound();
+    //scheduleOneRound();
 
     logger.debug("!!!!!!!!!!!!!!!SFQRouter END handling departure event. "+evt);
   }
