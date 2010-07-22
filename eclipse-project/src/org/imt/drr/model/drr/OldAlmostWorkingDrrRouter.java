@@ -18,7 +18,7 @@ import event.Event;
  *         http://imtlucca.it
  * 
  */
-public class DrrRouter extends Router {
+public class OldAlmostWorkingDrrRouter extends Router {
 
   /**
    * Logger
@@ -34,12 +34,12 @@ public class DrrRouter extends Router {
   
   private int lastScheduledDepartureTime;
 
-  public DrrRouter(Vector<Node> sources, int bandwidth, int numberOfFlows) {
+  public OldAlmostWorkingDrrRouter(Vector<Node> sources, int bandwidth, int numberOfFlows) {
     super(sources, bandwidth);
     this.numberOfFlows = numberOfFlows;
   }
 
-  public DrrRouter(Vector<Node> sources, int bandwidth, int numberOfFlows, Statistics stats, String name, boolean cleanOutgoing) {
+  public OldAlmostWorkingDrrRouter(Vector<Node> sources, int bandwidth, int numberOfFlows, Statistics stats, String name, boolean cleanOutgoing) {
     super(sources, bandwidth, stats, name, cleanOutgoing);
     this.numberOfFlows = numberOfFlows;
   }
@@ -102,6 +102,47 @@ public class DrrRouter extends Router {
     }
     return longest;
   }
+
+  @Override
+  public void proceedNextEvent() {
+    super.proceedNextEvent();
+    scheduleOneRoundIfNecessary();
+  }
+  
+  /**
+   * This method is needed because I want to implement the same idea as in fiforouter: the next departure event are scheduled only during 
+   * If I need to schedule cause of a scheduleOneRound called in ArrivalEE, then I have to wait next round.
+   * 
+   * Moreover, I don't want to schedule new packets after the handling of a nope event because it is a fake event, and the simulation time doesn't progress
+   */
+  private void scheduleOneRoundIfNecessary() {
+    //If I need to schedule cause of a scheduleOneRound called in ArrivalEE, then I have to wait next round
+    if(!needToScheduleAfterArrivalEE){
+      //I don't want to schedule new packets after the handling of a nope event because it is a fake event, and the simulation time doesn't progress
+      if(!nopeEvent){
+        if(needToSchedule()){
+          resetSchedulationFlags();
+          if (existsIncomingPackets()) {
+            // Generate the departure events of this round
+            scheduleOneRound();
+          }
+          /*
+           * SERVING else{ //If there are no incoming packets, and I am not
+           * actually sending a packet, then the router is idle
+           * if(lastScheduledDepartureTime<=getCurrentSimulationTime()){
+           * setServing(false); } }
+           */
+        } else {
+          resetSchedulationFlags();
+        }
+
+      }
+      nopeEvent = false;
+    }
+    needToScheduleAfterArrivalEE=false;
+  }
+
+  private boolean needToScheduleAfterArrivalEE=false;
   
   @Override
   protected void arrivalEventHandler(Event evt) {
@@ -110,6 +151,7 @@ public class DrrRouter extends Router {
     int idFlow = evt.getPacket().getIdFlow();
     Vector<Packet> flowQueue = incomingFlows.elementAt(idFlow);
 
+    //SERVINGif(isServing()){
     // *** BEGIN check if the flow is in the active list *** //
     boolean flowIsInActiveList = false;
     for (ActiveListElement ale : activeList) {
@@ -127,11 +169,26 @@ public class DrrRouter extends Router {
     // *** END check if the flow is in the active list *** //
 
     if(isIncomingBufferFull()){
+      // if no free buffers left, then FreeBuffer
       freeBuffer();
     }
+    // enqueue the packet
     flowQueue.add(evt.getPacket());
+    /* SERVING
+     * } else {
+      //The router is idle, so I can directly transmit this packet
+      lastScheduledDepartureTime=createDepartureEvent(evt.getPacket());
+      setServing(true);
+    }*/
+
+
     if(lastScheduledDepartureTime < getCurrentSimulationTime()){
-      scheduleAtLeastOnePacket();
+      if(existsIncomingPackets()){
+        //Then create the departure events relative to a round
+        scheduleOneRound();
+        if(needToSchedule())
+          needToScheduleAfterArrivalEE=true;
+      }
     }
 
     logger.debug("!!!!!!!!!!!!!!!DRRRouter END handling arrival event. "+evt);
@@ -142,33 +199,36 @@ public class DrrRouter extends Router {
   protected void departureEventHandler(Event evt) {
     logger.debug("!!!!!!!!!!!!!!!DRRRouter BEGIN handling departure event. "+evt);
     
+    // First put the sent packet in the list of the outgoing packets
     Packet sentPacket = evt.getPacket();
     addOutgoingPacket(sentPacket);
     
-    scheduleAtLeastOnePacket();
+    
+    if(existsIncomingPackets()){
+      //Then create the departure events relative to a round
+      scheduleOneRound();
+    }
+    /*else{
+      //otherwise make the router idle
+      setServing(false);
+    }*/
 
     logger.debug("!!!!!!!!!!!!!!!DRRRouter END handling departure event. "+evt);
   }
 
-  /**
-   * Keep executing rounds untill to when you schedule the departure event of at least a packet without increasing simulationTime
-   */
-  private void scheduleAtLeastOnePacket(){
-    boolean scheduledSomething = false;
-    do{
-      scheduledSomething = scheduleOneRound();
-    }while(existsIncomingPackets() && (!scheduledSomething) );
-  }
+  
   
   /**
-   * This method implement the scheduling of the packets of a round.
+   * This method simulate the implement the scheduling of the packets of a round.
    * It works on all the flows in activeList
    */
-  private boolean scheduleOneRound() {
-    boolean scheduled = false;
-    if(existsIncomingPackets()){
+  private void scheduleOneRound() {
+    if (!activeList.isEmpty()) {
+      schedulerCalled = true;
+      
       int initialActiveListSize = activeList.size();
-      //lastScheduledDepartureTime = Math.max(lastScheduledDepartureTime, getCurrentSimulationTime());
+      lastScheduledDepartureTime = Math.max(lastScheduledDepartureTime, getCurrentSimulationTime());
+      
       // During a round are scheduled packets from all the flows in activeList
       for (int i = 0; i < initialActiveListSize; i++) {
         ActiveListElement ale = activeList.remove(0);
@@ -178,12 +238,13 @@ public class DrrRouter extends Router {
         while ((deficitCounters[flowId] > 0) && (!flowQueue.isEmpty())) {
           int packetSize = flowQueue.elementAt(0).getSize();
           if (packetSize <= deficitCounters[flowId]) {
-            scheduled = true;
-            lastScheduledDepartureTime = Math.max(lastScheduledDepartureTime, getCurrentSimulationTime());
+            scheduledSomething = true;
             lastScheduledDepartureTime = createDepartureEvent(flowQueue.remove(0), lastScheduledDepartureTime);
             deficitCounters[flowId] -= packetSize;
+          } else {
+            // if the size of the packet is greater then the remained deficit counter, then exit from this while loop.
+            break;
           }
-          else break;
         }
         if (flowQueue.isEmpty()) {
           deficitCounters[flowId] = 0;
@@ -192,6 +253,18 @@ public class DrrRouter extends Router {
         }
       }
     }
-    return scheduled;
+  }
+  
+  
+  
+  
+  private boolean scheduledSomething = false;
+  private boolean schedulerCalled = false;
+  private boolean needToSchedule(){
+    return schedulerCalled && (!scheduledSomething);
+  }
+  private void resetSchedulationFlags(){
+    schedulerCalled = false;
+    scheduledSomething = false;
   }
 }
