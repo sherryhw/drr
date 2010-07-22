@@ -16,10 +16,10 @@ public final class Constants {
   
   public static final int DEFAULT_PACKET_SIZE_MAX = 4500;
   public static final int DEFAULT_NUMBER_OF_FLOWS = 20;
-  public static final int DEFAULT_ARRIVAL_TIME_MEAN = 180;
+  public static final int DEFAULT_ARRIVAL_TIME_MEAN = 100;
   
   public static final int MAXQUEUESIZE = 10000; //20 * 500
-  public static final int DEFAULT_BANDWIDTH = 1000; //250;
+  public static final int DEFAULT_BANDWIDTH = 500; //250;
   
   public static final int DEFAULTQUANTUMOFSERVICE = 60;
   
@@ -29,7 +29,7 @@ public final class Constants {
   
   public static final int PART_AVERAGE = 100;
   
-  public static final int SIMULATION_TIME = 2000000;
+  public static final int SIMULATION_TIME = 500000;
   
   public static final int NUMBER_OF_RUNS = 10;
 
