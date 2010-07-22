@@ -102,30 +102,40 @@ public class DrrRouter extends Router {
         longest = current;
       }
     }
-    return current;
+    return longest;
   }
 
   @Override
   public void proceedNextEvent() {
     super.proceedNextEvent();
-
-    if(!nopeEvent){//this way I don't schedule after a nope event
-      if(existsIncomingPackets()){
-        //Generate the departure events of this round
+    
+    if(!aaa){
+    if(needToSchedule()){
+      resetSchedulationFlags();
+      if (existsIncomingPackets()) {
+        // Generate the departure events of this round
         scheduleOneRound();
       }
-      /*SERVING
-       * else{
-      //If there are no incoming packets, and I am not actually sending a packet, then the router is idle
-      if(lastScheduledDepartureTime<=getCurrentSimulationTime()){
-        setServing(false);
-      }
-    }*/
+      /*
+       * SERVING else{ //If there are no incoming packets, and I am not
+       * actually sending a packet, then the router is idle
+       * if(lastScheduledDepartureTime<=getCurrentSimulationTime()){
+       * setServing(false); } }
+       */
     } else {
-      nopeEvent=false;
+      resetSchedulationFlags();
     }
+    /*if (nopeEvent) {//this way I don't schedule after a nope event
+      nopeEvent = false;
+    } else {
+      
+    }*/
+  }
+    
+    aaa=false;
   }
   
+  private boolean aaa=false;
   
   @Override
   protected void arrivalEventHandler(Event evt) {
@@ -133,36 +143,46 @@ public class DrrRouter extends Router {
 
     int idFlow = evt.getPacket().getIdFlow();
     Vector<Packet> flowQueue = incomingFlows.elementAt(idFlow);
-    
-    //SERVINGif(isServing()){
-      // *** BEGIN check if the flow is in the active list *** //
-      boolean flowIsInActiveList = false;
-      for (ActiveListElement ale : activeList) {
-        if (ale.getFlowId() == idFlow) {
-          flowIsInActiveList = true;
-          break;
-        }
-      }
-      if (!flowIsInActiveList) {    
-        //I add the flow to activeList.
-        ActiveListElement element = new ActiveListElement(flowQueue, idFlow);
-        activeList.add(element);
-        deficitCounters[idFlow] = 0;
-      }
-      // *** END check if the flow is in the active list *** //
 
-      if(isIncomingBufferFull()){
-        // if no free buffers left, then FreeBuffer
-        freeBuffer();
+    //SERVINGif(isServing()){
+    // *** BEGIN check if the flow is in the active list *** //
+    boolean flowIsInActiveList = false;
+    for (ActiveListElement ale : activeList) {
+      if (ale.getFlowId() == idFlow) {
+        flowIsInActiveList = true;
+        break;
       }
-      // enqueue the packet
-      flowQueue.add(evt.getPacket());
-    /*SERVING
+    }
+    if (!flowIsInActiveList) {    
+      //I add the flow to activeList.
+      ActiveListElement element = new ActiveListElement(flowQueue, idFlow);
+      activeList.add(element);
+      deficitCounters[idFlow] = 0;
+    }
+    // *** END check if the flow is in the active list *** //
+
+    if(isIncomingBufferFull()){
+      // if no free buffers left, then FreeBuffer
+      freeBuffer();
+    }
+    // enqueue the packet
+    flowQueue.add(evt.getPacket());
+    /* SERVING
      * } else {
       //The router is idle, so I can directly transmit this packet
       lastScheduledDepartureTime=createDepartureEvent(evt.getPacket());
       setServing(true);
     }*/
+
+
+    if(lastScheduledDepartureTime < getCurrentSimulationTime()){
+      if(existsIncomingPackets()){
+        //Then create the departure events relative to a round
+        scheduleOneRound();
+        if(needToSchedule())
+          aaa=true;
+      }
+    }
 
     logger.debug("!!!!!!!!!!!!!!!DRRRouter END handling arrival event. "+evt);
   }
@@ -176,12 +196,12 @@ public class DrrRouter extends Router {
     Packet sentPacket = evt.getPacket();
     addOutgoingPacket(sentPacket);
     
-    /* I moved these lines in the implementation of proceednextevent of this class
-     if(existsIncomingPackets()){
+    
+    if(existsIncomingPackets()){
       //Then create the departure events relative to a round
       scheduleOneRound();
     }
-    else{
+    /*else{
       //otherwise make the router idle
       setServing(false);
     }*/
@@ -197,6 +217,8 @@ public class DrrRouter extends Router {
    */
   private void scheduleOneRound() {
     if (!activeList.isEmpty()) {
+      schedulerCalled = true;
+      
       int initialActiveListSize = activeList.size();
       lastScheduledDepartureTime = Math.max(lastScheduledDepartureTime, getCurrentSimulationTime());
       
@@ -209,6 +231,7 @@ public class DrrRouter extends Router {
         while ((deficitCounters[flowId] > 0) && (!flowQueue.isEmpty())) {
           int packetSize = flowQueue.elementAt(0).getSize();
           if (packetSize <= deficitCounters[flowId]) {
+            scheduledSomething = true;
             lastScheduledDepartureTime = createDepartureEvent(flowQueue.remove(0), lastScheduledDepartureTime);
             deficitCounters[flowId] -= packetSize;
           } else {
@@ -225,4 +248,16 @@ public class DrrRouter extends Router {
     }
   }
   
+  
+  
+  
+  private boolean scheduledSomething = false;
+  private boolean schedulerCalled = false;
+  private boolean needToSchedule(){
+    return schedulerCalled && (!scheduledSomething);
+  }
+  private void resetSchedulationFlags(){
+    schedulerCalled = false;
+    scheduledSomething = false;
+  }
 }
