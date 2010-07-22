@@ -74,7 +74,7 @@ public class Statistics {
       flowsStatistics.put(packet.getIdFlow(), flow);
     }
     flow.incSize(packet.getSize());
-    flow.incTotalDelay(packet.getCumulativeDelayInQueue());
+    flow.incTotalDelay(packet.getCumulativeDelayInQueue());//getCumulativeDelayInQueue());
     logger.debug(packet.getCumulativeDelayInQueue());
   }
   

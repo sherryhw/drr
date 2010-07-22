@@ -45,6 +45,8 @@ public class FourRoutersSimulator implements Simulator {
    * Duration of the simulation in ticks. 
    */
   public int duration;
+
+  private int numberOfExperiment;
   
   /* (non-Javadoc)
    * @see org.imt.drr.model.Simulator#execute()
@@ -69,8 +71,10 @@ public class FourRoutersSimulator implements Simulator {
     }
     logger.warn("End of simulation in " + finalRouter.getCurrentSimulationTime() + " ms.....");   
     logger.warn((new Date()));
+    double[] through = new double[Host.DEFAULT_NUMBER_OF_FLOWS * routers.size()];
     for (Integer key : stats.getFlowsStatistics().keySet()) {
       double throughout = stats.getThroughput(key);
+      through[key] = throughout;
       long numberOfPackets = stats.getFlowsStatistics().get(key).getPacketsCounter();
       double averageDelay = stats.getAverageDelay(key) < 0.001 ? 0 : stats.getAverageDelay(key);
       logger.warn("####### " + key + " flow troughput = " + throughout 
@@ -84,6 +88,7 @@ public class FourRoutersSimulator implements Simulator {
       log += "]";
       logger.warn(log);
     }
+    StatsWriter.writeResults(Constants.OUTPUT_FILE_NAME, through, numberOfExperiment);
   }
 
   /* (non-Javadoc)
@@ -91,7 +96,7 @@ public class FourRoutersSimulator implements Simulator {
    */
   @Override
   public void initialize() {
-    initialize(2000000, RouterType.FIFO, 1);
+    initialize(2000000, RouterType.FIFO, 1, 0);
   }
 
   /**
@@ -101,8 +106,9 @@ public class FourRoutersSimulator implements Simulator {
    * @param type - type of router
    * @param countRouters - number of routers
    */
-  public void initialize(int duration, RouterType type, int countRouters) {
+  public void initialize(int duration, RouterType type, int countRouters, int numberOfExperiment) {
     logger.info("Initialization of the FourRouterSimulator....");   
+    this.numberOfExperiment = numberOfExperiment;
     this.duration = duration;
     hosts = new Vector<CombinedHost>();
     routers = new Vector<Router>();
