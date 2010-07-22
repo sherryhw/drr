@@ -5,6 +5,8 @@ package org.imt.drr.model.statistics;
 
 import java.util.HashMap;
 
+import org.apache.log4j.Logger;
+import org.imt.drr.Runner;
 import org.imt.drr.model.Packet;
 
 /**
@@ -17,6 +19,11 @@ import org.imt.drr.model.Packet;
  */
 public class Statistics {
  
+  /**
+   * Logger
+   */
+  static Logger logger = Logger.getLogger(Runner.class);
+
   /**
    * Default constructor.
    */
@@ -51,7 +58,7 @@ public class Statistics {
    */
   public float getAverageDelay(int flowId) {
     if (flowsStatistics.get(new Integer(flowId)) != null) {
-        return ((float)flowsStatistics.get(new Integer(flowId)).getTotalDelay()) / (float)flowsStatistics.get(new Integer(flowId)).getSizeCounter(); }
+        return ((float)flowsStatistics.get(new Integer(flowId)).getTotalDelay()) / (float)flowsStatistics.get(new Integer(flowId)).getPacketsCounter(); }
       else return 0;
   }
 
@@ -68,6 +75,7 @@ public class Statistics {
     }
     flow.incSize(packet.getSize());
     flow.incTotalDelay(packet.getCumulativeDelayInQueue());
+    logger.debug(packet.getCumulativeDelayInQueue());
   }
   
   /**
