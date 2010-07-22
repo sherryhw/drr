@@ -17,25 +17,25 @@ import org.imt.drr.model.Constants;
 public class FlowStatistics {
 
   /** packets counter. */
-  private int packetsCounter; 
+  private long packetsCounter; 
 
   /** packets counter. */
-  private int sizeCounter; 
+  private long sizeCounter; 
 
   /** total delay. */
-  private int totalDelay; 
+  private long totalDelay; 
   
   /** average delays */
-  private ArrayList<Float> averageDelays; 
+  private ArrayList<Double> averageDelays; 
 
   /** part packet counter */
-  private int partPacketCounter;
+  private long partPacketCounter;
   
   /** part delay*/
-  private int partDelay;
+  private long partDelay;
 
   /** flow id. */
-  private int flowId;
+  private long flowId;
 
   /**
    * Default constructor. 
@@ -43,7 +43,7 @@ public class FlowStatistics {
    * @param packetsCounter
    * @param flowId
    */
-  public FlowStatistics(int flowId) {
+  public FlowStatistics(long flowId) {
     this(flowId, 0, 0, 0);
   }
   
@@ -53,12 +53,12 @@ public class FlowStatistics {
    * @param packetsCounter
    * @param flowId
    */
-  public FlowStatistics(int flowId, int packetsCounter, int sizeCounter, int totalDelay) {
+  public FlowStatistics(long flowId, long packetsCounter, long sizeCounter, long totalDelay) {
     this.packetsCounter = packetsCounter;
     this.sizeCounter = sizeCounter;
     this.flowId = flowId;
     this.totalDelay = totalDelay;
-    this.averageDelays = new ArrayList<Float>();
+    this.averageDelays = new ArrayList<Double>();
     this.partDelay = 0;
     this.partPacketCounter = 0;
   }
@@ -66,14 +66,14 @@ public class FlowStatistics {
   /**
    * @return the totalDelay
    */
-  public int getTotalDelay() {
+  public long getTotalDelay() {
     return totalDelay;
   }
 
   /**
    * @param totalDelay the totalDelay to set
    */
-  public void incTotalDelay(int increase) {
+  public void incTotalDelay(long increase) {
     this.totalDelay += increase;
     this.partDelay += increase;
   }
@@ -85,7 +85,7 @@ public class FlowStatistics {
     packetsCounter++;
     partPacketCounter++;
     if (partPacketCounter >= Constants.PART_AVERAGE) {
-      averageDelays.add((float)partDelay/partPacketCounter);
+      averageDelays.add((double)partDelay/partPacketCounter);
       partPacketCounter = 0;
       partDelay = 0;
     }
@@ -94,7 +94,7 @@ public class FlowStatistics {
   /**
    * Increase size.
    */
-  public void incSize(int size) {
+  public void incSize(long size) {
     this.sizeCounter += size; 
     inc();
   }
@@ -102,49 +102,49 @@ public class FlowStatistics {
   /**
    * @param packetsCounter the packetsCounter to set
    */
-  public void setPacketsCounter(int packetsCounter) {
+  public void setPacketsCounter(long packetsCounter) {
     this.packetsCounter = packetsCounter;
   }
 
   /**
    * @return the packetsCounter
    */
-  public int getPacketsCounter() {
+  public long getPacketsCounter() {
     return packetsCounter;
   }
 
   /**
    * @param flowId the flowId to set
    */
-  public void setFlowId(int flowId) {
+  public void setFlowId(long flowId) {
     this.flowId = flowId;
   }
 
   /**
    * @return the flowId
    */
-  public int getFlowId() {
+  public long getFlowId() {
     return flowId;
   }
 
   /**
    * @return the sizeCounter
    */
-  public int getSizeCounter() {
+  public long getSizeCounter() {
     return sizeCounter;
   }
 
   /**
    * @param sizeCounter the sizeCounter to set
    */
-  public void setSizeCounter(int sizeCounter) {
+  public void setSizeCounter(long sizeCounter) {
     this.sizeCounter = sizeCounter;
   }
 
   /**
    * @return the averageDelays
    */
-  public ArrayList<Float> getAverageDelays() {
+  public ArrayList<Double> getAverageDelays() {
     return averageDelays;
   }
 

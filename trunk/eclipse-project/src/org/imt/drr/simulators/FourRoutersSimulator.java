@@ -70,15 +70,15 @@ public class FourRoutersSimulator implements Simulator {
     logger.warn("End of simulation in " + finalRouter.getCurrentSimulationTime() + " ms.....");   
     logger.warn((new Date()));
     for (Integer key : stats.getFlowsStatistics().keySet()) {
-      float throughout = stats.getThroughput(key);
-      int numberOfPackets = stats.getFlowsStatistics().get(key).getPacketsCounter();
-      float averageDelay = stats.getAverageDelay(key) < 0.001 ? 0 : stats.getAverageDelay(key);
+      double throughout = stats.getThroughput(key);
+      long numberOfPackets = stats.getFlowsStatistics().get(key).getPacketsCounter();
+      double averageDelay = stats.getAverageDelay(key) < 0.001 ? 0 : stats.getAverageDelay(key);
       logger.warn("####### " + key + " flow troughput = " + throughout 
           + " averageDelay = " + averageDelay  
           + " numberOfPackets = " + numberOfPackets + " #######");
-      ArrayList<Float> averages = stats.getFlowsStatistics().get(key).getAverageDelays();
+      ArrayList<Double> averages = stats.getFlowsStatistics().get(key).getAverageDelays();
       String log = "Averages[";
-      for (Float average : averages) {
+      for (Double average : averages) {
         log += average + ", ";
       }
       log += "]";
