@@ -31,7 +31,7 @@ public class CombinedHost implements ActiveNode {
   
   /** Default initialization. */
   public void initialize() {
-    initialize(Host.DEFAULT_PACKET_SIZE_MAX, Host.DEFAULT_ARRIVAL_TIME_MEAN, 0, Host.DEFAULT_NUMBER_OF_FLOWS, HostType.RANDOM_SIZE, false);
+    initialize(Host.DEFAULT_PACKET_SIZE_MAX, Host.DEFAULT_ARRIVAL_TIME_MEAN, 0, Host.DEFAULT_NUMBER_OF_FLOWS, HostType.RANDOM_SIZE, true);
   }
   
   /**

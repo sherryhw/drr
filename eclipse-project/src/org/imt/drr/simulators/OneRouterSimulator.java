@@ -3,6 +3,7 @@
  */
 package org.imt.drr.simulators;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Vector;
 
@@ -71,6 +72,13 @@ public class OneRouterSimulator implements Simulator {
       logger.warn("####### " + key + " flow troughput = " + throughout 
           + " averageDelay = " + averageDelay  
           + " numberOfPackets = " + numberOfPackets + " #######");
+      ArrayList<Float> averages = stats.getFlowsStatistics().get(key).getAverageDelays();
+      String log = "Averages[";
+      for (Float average : averages) {
+        log += average + ", ";
+      }
+      log += "]";
+//      logger.warn(log);
     }
   }
 

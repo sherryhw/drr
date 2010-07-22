@@ -55,10 +55,12 @@ public class Host implements Node {
   public Packet getNextPacket() {
     int size;
     if (type == HostType.RANDOM_SIZE) {
+//      size = (int)Math.round(Math.random() * packetSizeMax);//(int) Math.round(randomSize.nextUniform(0, packetSizeMax));
       size = (int) Math.round(randomSize.nextUniform(0, packetSizeMax));
     } else {
       size = packetSizeMax;
     }
+//    int flowId = (int)Math.round(Math.random()*(flowsCount - 1)) + flowsLower; //(int) randomFlowId.nextUniform(flowsLower, flowsLower + flowsCount) ;
     int flowId = (int) randomFlowId.nextUniform(flowsLower, flowsLower + flowsCount) ;
     int arrivalTime = (int) Math.round(randomArrival.nextExponential(arrivalTimeMean * flowsCount)) + 1;
     Packet packet = new Packet(flowId, size, arrivalTime);

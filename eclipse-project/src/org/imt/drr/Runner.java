@@ -38,14 +38,14 @@ public class Runner {
 //    OneRouterSimulator simulator = new OneRouterSimulator();
 //    simulator.initialize(10000, RouterType.DRR);
 //    simulator.execute();
-//    OneRouterSimulator simulator = new OneRouterSimulator();
-//    simulator.initialize(1000000, RouterType.DRR);
-//    simulator.execute();
+    OneRouterSimulator simulator = new OneRouterSimulator();
+    simulator.initialize(1000000, RouterType.DRR);
+    simulator.execute();
 
     //Four fifos
-    FourRoutersSimulator simulator = new FourRoutersSimulator();
-    simulator.initialize(Constants.SIMULATION_TIME, RouterType.FIFO, 4);
-    simulator.execute();
+//    FourRoutersSimulator simulator = new FourRoutersSimulator();
+//    simulator.initialize(Constants.SIMULATION_TIME, RouterType.FIFO, 4);
+//    simulator.execute();
   }
 
 }

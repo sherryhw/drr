@@ -83,7 +83,7 @@ public class DrrRouter extends Router {
     ActiveListElement longestQueue = getLongestQueue();
     Vector<Packet> flowQueue = longestQueue.getFlowQueue();
     flowQueue.remove(flowQueue.size()-1);
-    
+    //logger.warn("Utilizing free buffer");
     if (flowQueue.isEmpty()) {
       activeList.remove(longestQueue);
       deficitCounters[longestQueue.getFlowId()] = 0;
