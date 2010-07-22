@@ -72,7 +72,7 @@ public class OneRouterSimulator implements Simulator {
     double[] through = new double[Host.DEFAULT_NUMBER_OF_FLOWS];
     for (Integer key : stats.getFlowsStatistics().keySet()) {
       double throughout = stats.getThroughput(key);
-      through[key] = throughout;
+      through[key] = throughout * 1000;
       long numberOfPackets = stats.getFlowsStatistics().get(key).getPacketsCounter();
       double averageDelay = stats.getAverageDelay(key) < 0.001 ? 0 : stats.getAverageDelay(key);
       logger.warn("####### " + key + " flow troughput = " + throughout 
