@@ -46,7 +46,7 @@ public class Runner {
     StatsWriter.writeHeader(Constants.OUTPUT_FILE_NAME);
     for (int i = 0; i < Constants.NUMBER_OF_RUNS; i++){
       FourRoutersSimulator simulator = new FourRoutersSimulator();
-      simulator.initialize(Constants.SIMULATION_TIME, RouterType.FIFO, 4, i);
+      simulator.initialize(Constants.SIMULATION_TIME, RouterType.DRR, 4, i);
       simulator.execute();
     }
   }

@@ -127,7 +127,7 @@ public class FourRoutersSimulator implements Simulator {
       if (router != null) {
         sources.add(router);
       }
-      if (i == 3) {
+      if (i == countRouters - 1) {
         mainStats = new Statistics();
         stats = mainStats;
       } else {
