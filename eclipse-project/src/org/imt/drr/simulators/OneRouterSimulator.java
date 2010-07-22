@@ -41,6 +41,8 @@ public class OneRouterSimulator implements Simulator {
    * Duration of the simulation in ticks. 
    */
   public int duration;
+
+  private int numberOfExperiment;
   
   /* (non-Javadoc)
    * @see org.imt.drr.model.Simulator#execute()
@@ -65,8 +67,10 @@ public class OneRouterSimulator implements Simulator {
     }
     logger.warn("End of simulation in " + stats.getTime() + " ms.....");   
     logger.warn((new Date()));
+    double[] through = new double[Host.DEFAULT_NUMBER_OF_FLOWS];
     for (Integer key : stats.getFlowsStatistics().keySet()) {
       double throughout = stats.getThroughput(key);
+      through[key] = throughout;
       long numberOfPackets = stats.getFlowsStatistics().get(key).getPacketsCounter();
       double averageDelay = stats.getAverageDelay(key) < 0.001 ? 0 : stats.getAverageDelay(key);
       logger.warn("####### " + key + " flow troughput = " + throughout 
@@ -80,6 +84,7 @@ public class OneRouterSimulator implements Simulator {
       log += "]";
       logger.warn(log);
     }
+    StatsWriter.writeResults(Constants.OUTPUT_FILE_NAME, through, numberOfExperiment);
   }
 
   /* (non-Javadoc)
@@ -87,7 +92,7 @@ public class OneRouterSimulator implements Simulator {
    */
   @Override
   public void initialize() {
-    initialize(2000000, RouterType.FIFO);
+    initialize(2000000, RouterType.FIFO, 0);
   }
 
   /**
@@ -96,7 +101,8 @@ public class OneRouterSimulator implements Simulator {
    * @param duration - of the simulation
    * @param type - type of router
    */
-  public void initialize(int duration, RouterType type) {
+  public void initialize(int duration, RouterType type, int numberOfExperiment) {
+    this.numberOfExperiment = numberOfExperiment;
     logger.info("Initialization of the OneRouterSimulator....");   
     this.duration = duration;
     host = new CombinedHost();

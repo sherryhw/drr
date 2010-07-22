@@ -6,8 +6,10 @@ package org.imt.drr;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.imt.drr.model.Constants;
+import org.imt.drr.simulators.FourRoutersSimulator;
 import org.imt.drr.simulators.OneRouterSimulator;
 import org.imt.drr.simulators.RouterType;
+import org.imt.drr.simulators.StatsWriter;
 
 /**
  * The main application launch class.
@@ -37,11 +39,14 @@ public class Runner {
 //    OneRouterSimulator simulator = new OneRouterSimulator();
 //    simulator.initialize(10000, RouterType.DRR);
 //    simulator.execute();
-    OneRouterSimulator simulator = new OneRouterSimulator();
-    simulator.initialize(Constants.SIMULATION_TIME, RouterType.DRR);
-    simulator.execute();
+    StatsWriter.writeHeader(Constants.OUTPUT_FILE_NAME);
+    for (int i = 0; i < Constants.NUMBER_OF_RUNS; i++){
+      OneRouterSimulator simulator = new OneRouterSimulator();
+      simulator.initialize(Constants.SIMULATION_TIME, RouterType.FIFO, i);
+      simulator.execute();
+    }
 
-    //Four fifos
+//    Four fifos
 //    FourRoutersSimulator simulator = new FourRoutersSimulator();
 //    simulator.initialize(Constants.SIMULATION_TIME, RouterType.FIFO, 4);
 //    simulator.execute();
