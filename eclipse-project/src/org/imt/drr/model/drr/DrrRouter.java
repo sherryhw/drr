@@ -108,34 +108,43 @@ public class DrrRouter extends Router {
   @Override
   public void proceedNextEvent() {
     super.proceedNextEvent();
-    
-    if(!aaa){
-    if(needToSchedule()){
-      resetSchedulationFlags();
-      if (existsIncomingPackets()) {
-        // Generate the departure events of this round
-        scheduleOneRound();
-      }
-      /*
-       * SERVING else{ //If there are no incoming packets, and I am not
-       * actually sending a packet, then the router is idle
-       * if(lastScheduledDepartureTime<=getCurrentSimulationTime()){
-       * setServing(false); } }
-       */
-    } else {
-      resetSchedulationFlags();
-    }
-    /*if (nopeEvent) {//this way I don't schedule after a nope event
-      nopeEvent = false;
-    } else {
-      
-    }*/
-  }
-    
-    aaa=false;
+    scheduleOneRoundIfNecessary();
   }
   
-  private boolean aaa=false;
+  /**
+   * This method is needed because I want to implement the same idea as in fiforouter: the next departure event are scheduled only during 
+   * If I need to schedule cause of a scheduleOneRound called in ArrivalEE, then I have to wait next round.
+   * 
+   * Moreover, I don't want to schedule new packets after the handling of a nope event because it is a fake event, and the simulation time doesn't progress
+   */
+  private void scheduleOneRoundIfNecessary() {
+    //If I need to schedule cause of a scheduleOneRound called in ArrivalEE, then I have to wait next round
+    if(!needToScheduleAfterArrivalEE){
+      //I don't want to schedule new packets after the handling of a nope event because it is a fake event, and the simulation time doesn't progress
+      if(!nopeEvent){
+        if(needToSchedule()){
+          resetSchedulationFlags();
+          if (existsIncomingPackets()) {
+            // Generate the departure events of this round
+            scheduleOneRound();
+          }
+          /*
+           * SERVING else{ //If there are no incoming packets, and I am not
+           * actually sending a packet, then the router is idle
+           * if(lastScheduledDepartureTime<=getCurrentSimulationTime()){
+           * setServing(false); } }
+           */
+        } else {
+          resetSchedulationFlags();
+        }
+
+      }
+      nopeEvent = false;
+    }
+    needToScheduleAfterArrivalEE=false;
+  }
+
+  private boolean needToScheduleAfterArrivalEE=false;
   
   @Override
   protected void arrivalEventHandler(Event evt) {
@@ -180,7 +189,7 @@ public class DrrRouter extends Router {
         //Then create the departure events relative to a round
         scheduleOneRound();
         if(needToSchedule())
-          aaa=true;
+          needToScheduleAfterArrivalEE=true;
       }
     }
 
