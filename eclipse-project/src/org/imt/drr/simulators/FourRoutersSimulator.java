@@ -120,7 +120,7 @@ public class FourRoutersSimulator implements Simulator {
     for (int i = 0; i < countRouters; i++) {
       host = new CombinedHost();
       host.initialize(Host.DEFAULT_PACKET_SIZE_MAX, Host.DEFAULT_ARRIVAL_TIME_MEAN, 
-          i * Host.DEFAULT_NUMBER_OF_FLOWS, Host.DEFAULT_NUMBER_OF_FLOWS, HostType.RANDOM_SIZE, false);
+          i * Host.DEFAULT_NUMBER_OF_FLOWS, Host.DEFAULT_NUMBER_OF_FLOWS, HostType.RANDOM_SIZE, Constants.USE_BASTARD_FLOW);
       hosts.add(host);
       sources = new Vector<Node> (); 
       sources.add(host);

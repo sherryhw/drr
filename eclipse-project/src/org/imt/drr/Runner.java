@@ -35,20 +35,20 @@ public class Runner {
     //Configure logger
     PropertyConfigurator.configure("log/log4j.properties");
     
-    StatsWriter.writeHeader(Constants.OUTPUT_FILE_NAME);
-    for (int i = 0; i < Constants.NUMBER_OF_RUNS; i++){
-      OneRouterSimulator simulator = new OneRouterSimulator();
-      simulator.initialize(Constants.SIMULATION_TIME, RouterType.NEWDRR, i);
-      simulator.execute();
-    }
-
-//    Four fifos
 //    StatsWriter.writeHeader(Constants.OUTPUT_FILE_NAME);
 //    for (int i = 0; i < Constants.NUMBER_OF_RUNS; i++){
-//      FourRoutersSimulator simulator = new FourRoutersSimulator();
-//      simulator.initialize(Constants.SIMULATION_TIME, RouterType.FIFO, 4, i);
+//      OneRouterSimulator simulator = new OneRouterSimulator();
+//      simulator.initialize(Constants.SIMULATION_TIME, RouterType.NEWDRR, i);
 //      simulator.execute();
 //    }
+
+//    Four fifos
+    StatsWriter.writeHeader(Constants.OUTPUT_FILE_NAME);
+    for (int i = 0; i < Constants.NUMBER_OF_RUNS; i++){
+      FourRoutersSimulator simulator = new FourRoutersSimulator();
+      simulator.initialize(Constants.SIMULATION_TIME, RouterType.FIFO, 4, i);
+      simulator.execute();
+    }
   }
 
 }

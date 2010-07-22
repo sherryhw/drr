@@ -13,5 +13,6 @@ package org.imt.drr.model;
  */
 public enum HostType {
   CONSTANT_SIZE,
-  RANDOM_SIZE
+  RANDOM_SIZE,
+  BIMODEL
 }

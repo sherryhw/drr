@@ -10,13 +10,13 @@ package org.imt.drr.model;
  */
 public final class Constants {
 
-  public static final boolean USE_BASTARD_FLOW = false;
+  public static final boolean USE_BASTARD_FLOW = true;
   
-  public static final HostType HOST_TYPE = HostType.CONSTANT_SIZE;
+  public static final HostType HOST_TYPE = HostType.RANDOM_SIZE;
   
-  public static final int DEFAULT_PACKET_SIZE_MAX = 4000;
+  public static final int DEFAULT_PACKET_SIZE_MAX = 4500;
   public static final int DEFAULT_NUMBER_OF_FLOWS = 20;
-  public static final int DEFAULT_ARRIVAL_TIME_MEAN = 20;
+  public static final int DEFAULT_ARRIVAL_TIME_MEAN = 180;
   
   public static final int MAXQUEUESIZE = 10000; //20 * 500
   public static final int DEFAULT_BANDWIDTH = 1000; //250;
@@ -29,7 +29,7 @@ public final class Constants {
   
   public static final int PART_AVERAGE = 100;
   
-  public static final int SIMULATION_TIME = 100000;
+  public static final int SIMULATION_TIME = 2000000;
   
   public static final int NUMBER_OF_RUNS = 10;
 

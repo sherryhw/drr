@@ -57,6 +57,12 @@ public class Host implements Node {
     if (type == HostType.RANDOM_SIZE) {
 //      size = (int)Math.round(Math.random() * packetSizeMax);//(int) Math.round(randomSize.nextUniform(0, packetSizeMax));
       size = (int) Math.round(randomSize.nextUniform(0, packetSizeMax));
+    } else if (type == HostType.BIMODEL) {
+      if (Math.round(randomSize.nextUniform(0, 1)) == 0) {
+        size = 2000;
+      } else {
+        size = 4500;
+      }
     } else {
       size = packetSizeMax;
     }
