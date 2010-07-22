@@ -10,6 +10,6 @@ package org.imt.drr.simulators;
  */
 public enum RouterType {
 
-  DRR, FIFO
+  DRR, FIFO, NEWDRR, SFQ
   
 }
