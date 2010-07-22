@@ -58,7 +58,6 @@ public class DrrRouter extends Router {
       deficitCounters[i] = 0;
       quantumOfServices[i] = DEFAULTQUANTUMOFSERVICE;
     }
-
   }
   
   private boolean existsIncomingPackets(){
