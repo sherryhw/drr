@@ -11,8 +11,6 @@ import org.imt.drr.model.Packet;
 import org.imt.drr.model.Router;
 import org.imt.drr.model.statistics.Statistics;
 
-import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
-
 import event.Event;
 
 /**

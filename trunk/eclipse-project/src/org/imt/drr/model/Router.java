@@ -10,8 +10,6 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.imt.drr.model.statistics.Statistics;
 
-import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
-
 import event.Event;
 import event.EventComparator;
 import event.EventType;

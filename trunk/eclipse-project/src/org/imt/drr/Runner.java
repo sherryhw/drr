@@ -6,7 +6,6 @@ package org.imt.drr;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.imt.drr.model.Constants;
-import org.imt.drr.simulators.FourRoutersSimulator;
 import org.imt.drr.simulators.OneRouterSimulator;
 import org.imt.drr.simulators.RouterType;
 
@@ -39,7 +38,7 @@ public class Runner {
 //    simulator.initialize(10000, RouterType.DRR);
 //    simulator.execute();
     OneRouterSimulator simulator = new OneRouterSimulator();
-    simulator.initialize(1000000, RouterType.DRR);
+    simulator.initialize(Constants.SIMULATION_TIME, RouterType.DRR);
     simulator.execute();
 
     //Four fifos
