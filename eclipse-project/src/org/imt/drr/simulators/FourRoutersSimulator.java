@@ -3,6 +3,7 @@
  */
 package org.imt.drr.simulators;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Vector;
 
@@ -75,6 +76,13 @@ public class FourRoutersSimulator implements Simulator {
       logger.warn("####### " + key + " flow troughput = " + throughout 
           + " averageDelay = " + averageDelay  
           + " numberOfPackets = " + numberOfPackets + " #######");
+      ArrayList<Float> averages = stats.getFlowsStatistics().get(key).getAverageDelays();
+      String log = "Averages[";
+      for (Float average : averages) {
+        log += average + ", ";
+      }
+      log += "]";
+      logger.warn(log);
     }
   }
 
@@ -101,6 +109,7 @@ public class FourRoutersSimulator implements Simulator {
     CombinedHost host;
     Router router = null;
     Vector<Node> sources; 
+    Statistics mainStats = null;
     stats = null;
     for (int i = 0; i < countRouters; i++) {
       host = new CombinedHost();
@@ -112,15 +121,18 @@ public class FourRoutersSimulator implements Simulator {
       if (router != null) {
         sources.add(router);
       }
-      if (i == countRouters - 1) {
-        stats = new Statistics();
+      if (i == 3) {
+        mainStats = new Statistics();
+        stats = mainStats;
+      } else {
+        mainStats = null;
       }
       switch (type) {
         case FIFO: 
-          router = new FifoRouter(sources, Router.DEFAULT_BANDWIDTH, stats, "FifoRouter#" + i, false);
+          router = new FifoRouter(sources, Router.DEFAULT_BANDWIDTH, mainStats, "FifoRouter#" + i, false);
           break;
         case DRR:
-          router = new DrrRouter(sources, Router.DEFAULT_BANDWIDTH, Host.DEFAULT_NUMBER_OF_FLOWS * countRouters, stats, "DrrRouter#" + i, false);
+          router = new DrrRouter(sources, Router.DEFAULT_BANDWIDTH, Host.DEFAULT_NUMBER_OF_FLOWS * countRouters, mainStats, "DrrRouter#" + i, false);
           break;
       }
       if (i == countRouters - 1) {

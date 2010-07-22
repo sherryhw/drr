@@ -214,7 +214,8 @@ public abstract class Router implements ActiveNode {
       return 0;
     }
     else{
-      return (int) (p.getSize()/bandwidth + 0.5 ); 
+      int res = Math.round(p.getSize()/bandwidth);
+      return  res == 0 ? 1 : res ; 
     }
   }
   
