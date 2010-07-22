@@ -14,8 +14,10 @@ import org.imt.drr.model.Node;
 import org.imt.drr.model.Router;
 import org.imt.drr.model.Simulator;
 import org.imt.drr.model.drr.DrrRouter;
+import org.imt.drr.model.drr.NewDrrRouter;
 import org.imt.drr.model.fifo.CombinedHost;
 import org.imt.drr.model.fifo.FifoRouter;
+import org.imt.drr.model.sfq.SFQRouter;
 import org.imt.drr.model.statistics.Statistics;
 
 /**
@@ -116,6 +118,12 @@ public class OneRouterSimulator implements Simulator {
         break;
       case DRR:
         router = new DrrRouter(sources, Router.DEFAULT_BANDWIDTH, Host.DEFAULT_NUMBER_OF_FLOWS, stats, "DrrRouter", false);
+        break;
+      case NEWDRR:
+        router = new NewDrrRouter(sources, Router.DEFAULT_BANDWIDTH, Host.DEFAULT_NUMBER_OF_FLOWS, stats, "NEWDrrRouter", false);
+        break;
+      case SFQ:
+        router = new SFQRouter(sources, Router.DEFAULT_BANDWIDTH, Host.DEFAULT_NUMBER_OF_FLOWS, stats, "SFQRouter", false);
         break;
     }
     router.initialize();
