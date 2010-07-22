@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.imt.drr.model.ActiveNode;
+import org.imt.drr.model.Constants;
 import org.imt.drr.model.Host;
 import org.imt.drr.model.HostType;
 import org.imt.drr.model.Node;
@@ -31,7 +32,8 @@ public class CombinedHost implements ActiveNode {
   
   /** Default initialization. */
   public void initialize() {
-    initialize(Host.DEFAULT_PACKET_SIZE_MAX, Host.DEFAULT_ARRIVAL_TIME_MEAN, 0, Host.DEFAULT_NUMBER_OF_FLOWS, HostType.RANDOM_SIZE, true);
+    initialize(Host.DEFAULT_PACKET_SIZE_MAX, Host.DEFAULT_ARRIVAL_TIME_MEAN, 0, 
+        Host.DEFAULT_NUMBER_OF_FLOWS, HostType.RANDOM_SIZE, Constants.USE_BASTARD_FLOW);
   }
   
   /**
